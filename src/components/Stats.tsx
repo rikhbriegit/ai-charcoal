@@ -223,7 +223,7 @@ export function Stats() {
   ];
 
   return (
-    <div className="bg-[#030304] border-y border-zinc-900/60 py-24 sm:py-28 relative overflow-hidden">
+    <div className="bg-[#030304] border-y border-zinc-900/60 pt-10 pb-24 sm:pt-12 sm:pb-28 relative overflow-hidden">
       {/* Luxury Cinematic Grid & Ember Background Details */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.035)_0%,transparent_70%)] pointer-events-none" />
       <div 
@@ -242,10 +242,10 @@ export function Stats() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3Py-1 py-1 rounded-full bg-orange-600/5 border border-orange-500/15"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-600 border border-orange-500 shadow-md"
           >
-            <Sparkles className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
-            <span className="text-[10px] font-mono tracking-widest font-bold text-orange-400 uppercase">PREMIUM COAL PERFORMANCE</span>
+            <Sparkles className="w-3.5 h-3.5 text-white animate-pulse" />
+            <span className="text-[10px] font-mono tracking-widest font-bold text-white uppercase">PREMIUM COAL PERFORMANCE</span>
           </motion.div>
         </div>
 

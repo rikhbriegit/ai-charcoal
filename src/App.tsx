@@ -16,6 +16,7 @@ import { Footer } from './components/Footer';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { SeoAdsProvider } from './context/SeoAdsContext';
 import { SeoAdsAdmin } from './components/SeoAdsAdmin';
+import { AiChatWidget } from './components/AiChatWidget';
 
 function AppContent() {
   const { isRtl } = useLanguage();
@@ -137,6 +138,7 @@ function AppContent() {
         <div data-slide="true" id="contact"><Contact /></div>
       </main>
       <Footer onOpenAdmin={() => navigateTo('admin')} />
+      <AiChatWidget />
     </div>
   );
 }
