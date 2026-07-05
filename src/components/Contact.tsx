@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import React, { useState } from 'react';
 import { useSeoAds } from '../context/SeoAdsContext';
+import { getFirstTouchUtm } from '../utils/utm';
 
 export function Contact() {
   const { t, language } = useLanguage();
@@ -11,13 +12,33 @@ export function Contact() {
   const [email, setEmail] = useState('');
   const [product, setProduct] = useState('');
   const [message, setMessage] = useState('');
+  const [hp, setHp] = useState(''); // honeypot — real users never fill this
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Trigger conversion tracking event with input data
     triggerConversion(name, email, product || t('prod_name_bbq'));
-    
+
+    // Send the lead to the CRM ledger. Fire-and-forget for UX: a CRM hiccup must
+    // never block the visitor (conversion is already tracked above).
+    try {
+      await fetch('/crm/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contact_name: name,
+          email,
+          product,
+          message,
+          utm: getFirstTouchUtm(),
+          _hp: hp,
+        }),
+      });
+    } catch (_) {
+      /* CRM unreachable — don't disrupt the visitor */
+    }
+
     alert(
       language === 'ar' ? 'تم تقديم النموذج بنجاح!' :
       language === 'fa' ? 'فرم با موفقیت ارسال شد!' :
@@ -31,6 +52,7 @@ export function Contact() {
     setEmail('');
     setProduct('');
     setMessage('');
+    setHp('');
   };
 
   return (
@@ -92,6 +114,17 @@ export function Contact() {
             className="bg-[#0c0d10] p-8 sm:p-10 rounded-3xl border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] text-left"
           >
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Honeypot: hidden from humans; bots that autofill it get their submission dropped server-side. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={hp}
+                onChange={(e) => setHp(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
+              />
               <div>
                 <label htmlFor="name" className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">{t('contact_label_name')}</label>
                 <input

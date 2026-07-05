@@ -2,6 +2,9 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { chatCompletion, type ChatMessage } from "./lib/ollama";
+import cookieParser from "cookie-parser";
+import { crmRouter } from "./crm/routes";
+import { assertCrmAuthConfigured } from "./crm/auth";
 import dotenv from "dotenv";
 
 // override: true so this project's .env always wins over any stale/global
@@ -16,6 +19,7 @@ app.disable("x-powered-by");
 // req.ip = real socket IP, so X-Forwarded-For can't be spoofed to bypass rate limits.
 app.set("trust proxy", process.env.TRUST_PROXY === "1" ? 1 : false);
 app.use(express.json({ limit: "100kb" }));
+app.use(cookieParser());
 
 // Security response headers (defense-in-depth).
 app.use((req, res, next) => {
@@ -89,6 +93,17 @@ function chatRateLimit(req: any, res: any, next: any) {
 
 // AI engine: Ollama Cloud (same model as ai-chat-embedded, default glm-5.2:cloud).
 // Configured via OLLAMA_API_KEY / OLLAMA_BASE_URL / OLLAMA_MODEL — see lib/ollama.ts.
+
+// ── CRM Lead Ledger routes (mounted only when configured, so the marketing
+// server still boots without CRM env). Runs after security headers, before the
+// SPA catch-all. See crm/routes.ts. ─────────────────────────────────────────
+if (process.env.CRM_DATABASE_URL && process.env.CRM_JWT_SECRET) {
+  assertCrmAuthConfigured();
+  app.use("/crm/api", crmRouter());
+  console.log("CRM routes mounted at /crm/api");
+} else {
+  console.log("CRM disabled (set CRM_DATABASE_URL + CRM_JWT_SECRET to enable).");
+}
 
 // API routes
 // Light limiter for the cheap health endpoint (basic flood mitigation).

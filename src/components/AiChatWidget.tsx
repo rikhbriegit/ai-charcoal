@@ -19,6 +19,51 @@ export function AiChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // ── CRM lead capture (SPEC §8.3): when a conversation ends, send the full
+  // transcript to the CRM once for a separate server-side extraction pass. ────
+  const conversationIdRef = useRef<string>(
+    typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `c_${Date.now()}`
+  );
+  const submittedRef = useRef(false);
+  const messagesRef = useRef<Message[]>([]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
+  const submitTranscript = () => {
+    if (submittedRef.current) return;
+    const msgs = messagesRef.current;
+    if (!msgs.some((m) => m.role === 'user')) return; // only if the visitor actually engaged
+    submittedRef.current = true;
+    try {
+      fetch('/crm/api/chat-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true, // survive tab close / navigation
+        body: JSON.stringify({
+          conversationId: conversationIdRef.current,
+          history: msgs.map((m) => ({ role: m.role, text: m.text })),
+        }),
+      }).catch(() => {});
+    } catch (_) { /* never disrupt the visitor */ }
+  };
+
+  // Submit when the chat panel closes (open → closed transition).
+  const prevOpenRef = useRef(false);
+  useEffect(() => {
+    if (prevOpenRef.current && !isOpen) submitTranscript();
+    prevOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  // Backup triggers: tab hidden / page unload.
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === 'hidden') submitTranscript(); };
+    window.addEventListener('pagehide', submitTranscript);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      window.removeEventListener('pagehide', submitTranscript);
+      document.removeEventListener('visibilitychange', onHide);
+    };
+  }, []);
+
   // Multilingual Strings
   const strings = {
     id: {
