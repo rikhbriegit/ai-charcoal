@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type LanguageType = 'id' | 'en' | 'ar';
+export type LanguageType = 'id' | 'en' | 'ar' | 'fa' | 'tr';
+
+// All languages the site ships (SEO + UI). English is the primary/x-default
+// because B2B charcoal buyers across the whole Middle East search in English;
+// Arabic (Gulf), Persian (Iran) and Turkish (Turkey) cover the local queries.
+export const SUPPORTED_LANGS: LanguageType[] = ['id', 'en', 'ar', 'fa', 'tr'];
+// Right-to-left scripts: Arabic AND Persian/Farsi.
+export const RTL_LANGS: LanguageType[] = ['ar', 'fa'];
 
 export interface LanguageContextProps {
   language: LanguageType;
@@ -117,7 +124,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // Logistics
     log_sub: 'DISTRIBUSI LOGISTIK GLOBAL',
     log_title: 'Konektivitas Jalur Ekspor & Dokumentasi Mutlak',
-    log_desc: 'Memiliki jaringan pelayaran kuat dari Pelabuhan Tanjung Perak (Surabaya) untuk menjangkau pusat grosir arang internasional secara terjadwal.',
+    log_desc: 'Memiliki jaringan pelayaran kuat dari Pelabuhan Tanjung Priok (Jakarta) untuk menjangkau pusat grosir arang internasional secara terjadwal.',
     log_frequent_port: 'PELABUHAN TUJUAN FREKUEN',
     log_peta: 'PETA EKSPOR HILIR',
     log_transit_estimate: 'Estimasi Transit',
@@ -134,7 +141,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_title: 'Hubungi Kami',
     contact_desc: 'Baik Anda memerlukan kontainer penuh briket shisha premium maupun arang kayu berkualitas untuk jaringan restoran Anda, tim analis ekspor kami siap membantu menyusun penawaran terbaik.',
     contact_headquarters: 'Kantor Pusat',
-    contact_address: 'Jl. Industri No. 45\nSurabaya, Jawa Timur 60221\nIndonesia',
+    contact_address: 'PT. Briket Charcoal Indonesia\nJl. Raya Kronjo No. 18, Sukamulya\nBalaraja, Tangerang, Banten 15610\nIndonesia',
     contact_phone: 'Telepon / WhatsApp',
     contact_email: 'Email Ekspor',
     contact_form_name: 'Nama Lengkap',
@@ -148,6 +155,10 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_other: 'Lainnya',
     footer_tagline: 'Produksi arang premium terbaik untuk keberlanjutan bumi dan efisiensi energi mutlak.',
     footer_rights: 'Hak Cipta Dilindungi.',
+
+    // SEO (per-language <title> + meta description, injected at runtime)
+    seo_title: 'Bricket Charcoal Indonesia — Eksportir Arang Batok Kelapa Premium',
+    seo_desc: 'Eksportir arang briket batok kelapa premium dari Indonesia untuk shisha & BBQ. Abu putih 1.9%, karbon 80%+, bakar 60–120 menit. Ekspor ke Timur Tengah & dunia — sample gratis.',
   },
   en: {
     // Navbar
@@ -256,7 +267,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // Logistics
     log_sub: 'GLOBAL LOGISTICS DISTRIBUTION',
     log_title: 'Export Shipping Connectivity & Complete Documentation',
-    log_desc: 'Operating high-frequency cargo connections from the Port of Tanjung Perak (Surabaya) to international logistics hubs regularly.',
+    log_desc: 'Operating high-frequency cargo connections from the Port of Tanjung Priok (Jakarta) to international logistics hubs regularly.',
     log_frequent_port: 'FREQUENT DESTINATION PORTS',
     log_peta: 'DOWNSTREAM EXPORT MAP',
     log_transit_estimate: 'Transit Estimate',
@@ -273,7 +284,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_title: 'Contact Our Team',
     contact_desc: 'Whether you require ocean freight full-containers of shisha briquettes, or wholesale restaurant charcoal, our export team is ready to assist you.',
     contact_headquarters: 'Headquarters',
-    contact_address: 'Jl. Industri No. 45\nSurabaya, East Java 60221\nIndonesia',
+    contact_address: 'PT. Briket Charcoal Indonesia\nJl. Raya Kronjo No. 18, Sukamulya\nBalaraja, Tangerang, Banten 15610\nIndonesia',
     contact_phone: 'Phone / WhatsApp',
     contact_email: 'Export Inquiry Email',
     contact_form_name: 'Full Name',
@@ -287,6 +298,10 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_other: 'Other Option',
     footer_tagline: 'Manufacturing premium charcoal products to power global sustainability and absolute heating efficiency.',
     footer_rights: 'All Rights Reserved.',
+
+    // SEO (per-language <title> + meta description, injected at runtime)
+    seo_title: 'Premium Charcoal Briquettes — Coconut Shell Charcoal Exporter | Bricket Charcoal Indonesia',
+    seo_desc: 'Premium coconut shell charcoal briquettes for shisha (hookah) & BBQ, exported worldwide from Indonesia. White ash 1.9%, fixed carbon 80%+, 60–120 min burn. Free sample — wholesale, negotiable per container.',
   },
   ar: {
     // Navbar
@@ -395,7 +410,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // Logistics
     log_sub: 'مركز التوزيع والشحن اللوجستي العابر للقارات',
     log_title: 'طرق الشحن البحري الموثقة وسلامة المستندات',
-    log_desc: 'تدار عملياتنا البحرية مباشرة من ميناء تانجونغ بيراك (سورابايا) لضمان توفير خطوط نقل عالية الانتظام ومجدولة للوجهات العالمية.',
+    log_desc: 'تدار عملياتنا البحرية مباشرة من ميناء تانجونغ بريوك (جاكرتا) لضمان توفير خطوط نقل عالية الانتظام ومجدولة للوجهات العالمية.',
     log_frequent_port: 'الموانئ والمحطات الأكثر تردداً للعملاء',
     log_peta: 'خريطة الشحن البحري باتجاه المصب',
     log_transit_estimate: 'وقت العبور المقدر',
@@ -412,7 +427,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_title: 'تواصل مع الإدارة الدولية وقسم التصدير',
     contact_desc: 'سواء كنت بصدد طلب حاويات تصدير كاملة لفحم الشيشة وجوز الهند، أو تود الحصول على كميات شواء ضخمة لسلاسل الضيافة خاصتكم، الخبراء لدينا بانتظارك.',
     contact_headquarters: 'المكتب الإداري الرئيسي',
-    contact_address: 'طريق الصناعة، رقم ٤٥\nسورابايا، جاوة الشرقية ٦٠٢٢١\nإندونيسيا',
+    contact_address: 'PT. Briket Charcoal Indonesia\nشارع رايا كرونجو رقم ١٨، سوكامويا\nبالاراجا، تانجيرانج، بانتين ١٥٦١٠\nإندونيسيا',
     contact_phone: 'الهاتف / رقم واتساب الدولي',
     contact_email: 'بوابة مراسلات التصدير والمبيعات',
     contact_form_name: 'الاسم الكريم بالكامل',
@@ -426,34 +441,385 @@ const translations: Record<LanguageType, Record<string, string>> = {
     contact_other: 'آخر',
     footer_tagline: 'تصنيع منتجات فحم طبيعية فاخرة لتمديد استقرار الطاقة المستدامة ودفئها العائلي والأخلاقي على كوكب الأرض.',
     footer_rights: 'جميع الحقوق الفنية والتجارية محفوظة لمؤسستنا.',
+
+    // SEO (per-language <title> + meta description, injected at runtime)
+    seo_title: 'فحم شيشة وفحم شواء فاخر من قشر جوز الهند — مصدّر من إندونيسيا | Bricket Charcoal Indonesia',
+    seo_desc: 'فحم قوالب فاخر من قشر جوز الهند للشيشة (الأركيلة) والشواء، تصدير عالمي من إندونيسيا. رماد أبيض 1.9%، كربون ثابت 80%+، اشتعال 60–120 دقيقة. عينة مجانية — بالجملة، السعر قابل للتفاوض للحاوية.',
+  },
+  fa: {
+    // Navbar
+    nav_home: 'خانه',
+    nav_about: 'درباره ما',
+    nav_products: 'محصولات',
+    nav_features: 'مزایا',
+    nav_analysis: 'آنالیز آزمایشگاهی',
+    nav_logistics: 'لجستیک',
+    nav_contact: 'تماس با ما',
+    nav_order_now: 'سفارش دهید',
+    nav_search: 'جستجوی محصولات',
+    brand_sub: 'ممتاز',
+
+    // Hero
+    hero_sub: 'کیفیت برتر برای بهترین نتیجه',
+    hero_title_1: 'زغال کوکو',
+    hero_title_2: 'ممتاز صادراتی',
+    hero_desc: 'زغال با کیفیت بالا، بهترین انتخاب برای سوختن طولانی‌تر، حرارت پایدار و کاملاً سازگار با محیط زیست.',
+    hero_btn_products: 'مشاهده محصولات',
+    hero_btn_video: 'تماشای ویدیو',
+    hero_badge_env: 'محیط زیست',
+    hero_badge_env_sub: 'سازگار با طبیعت',
+    hero_badge_burn: 'ماندگاری بیشتر',
+    hero_badge_burn_sub: 'سوختن طولانی',
+    hero_badge_guar: 'تضمین کیفیت',
+    hero_badge_guar_sub: 'کیفیت منتخب',
+    hero_customer_stats: '+۱۰۰۰',
+    hero_customer_title: 'مشتری راضی',
+
+    // Stats
+    stats_1_val: '۱۰۰٪',
+    stats_1_title: 'کیفیت ممتاز',
+    stats_1_desc: 'زغال منتخب و آزمایش‌شده با بالاترین استانداردهای کیفی.',
+    stats_2_val: '+۸ ساعت',
+    stats_2_title: 'ماندگاری بیشتر',
+    stats_2_desc: 'سوختن پایدار با حرارت یکنواخت و مداوم.',
+    stats_3_val: '+۱۰۰۰',
+    stats_3_title: 'مشتری راضی',
+    stats_3_desc: 'اعتماد مشتریان اولویت اصلی ماست.',
+    stats_4_val: 'سازگار با محیط زیست',
+    stats_4_title: 'دوستدار طبیعت',
+    stats_4_desc: 'تولید کاملاً طبیعی بدون آسیب به محیط زیست.',
+
+    // About
+    about_sub: 'ما که هستیم و تعهد ما',
+    about_title: 'تأمین‌کننده انرژی پایدار با درستکاری کامل',
+    about_desc_1: 'شرکت Bricket Charcoal Indonesia با چشم‌اندازی برای رساندن محصولات کشاورزی اندونزی به بازارهای صادراتی جهان تأسیس شد. ما زغال مرغوب پوست نارگیل و چوب تولید و عرضه می‌کنیم و با بهره‌گیری از محصولات جانبی کشاورزی، ردپای کربنی را به حداقل می‌رسانیم.',
+    about_desc_2: 'ما با صدها تعاونی کشاورزی محلی همکاری نزدیک داریم تا تأمین پایدار مواد اولیه را تضمین کرده و اقتصاد روستایی را از طریق تجارت منصفانه تقویت کنیم.',
+    about_stat_1_val: '۰٪',
+    about_stat_1_title: 'افزودنی شیمیایی',
+    about_stat_1_desc: 'بدون گوگرد و مواد شیمیایی خطرناک برای اشتعال سریع.',
+    about_stat_2_val: 'کمتر از ۲.۵٪',
+    about_stat_2_title: 'خاکستر سفید باقی‌مانده',
+    about_stat_2_desc: 'سوختن تمیز با کمترین باقی‌مانده و رسوب.',
+    about_flow_title: 'خط تولید یکپارچه',
+    about_certified: 'دارای گواهی ISO 9001:2015',
+    about_audit: 'سیاست بازرسی آزاد کارخانه',
+
+    // Production Steps
+    step_1_title: 'تأمین و برداشت مواد اولیه',
+    step_1_desc: 'پوست نارگیل رسیده و منتخب مستقیماً از کشاورزان محلی جاوه و سولاوسی جمع‌آوری می‌شود.',
+    step_2_title: 'کربن‌سازی با پیرولیز',
+    step_2_desc: 'سوزاندن کنترل‌شده و بدون اکسیژن، گازهای فرّار را خارج کرده و زغالی متراکم با کربن ثابت بالا تولید می‌کند.',
+    step_3_title: 'آسیاب و الک کردن',
+    step_3_desc: 'زغال به پودری بسیار ریز آسیاب و با دقت الک می‌شود تا کاملاً عاری از خاک و شن باشد.',
+    step_4_title: 'فشرده‌سازی هیدرولیکی',
+    step_4_desc: 'با چسب طبیعی نشاسته تاپیوکا ترکیب و تحت فشار بالای هیدرولیک به قالب‌های هندسی فشرده می‌شود.',
+    step_5_title: 'خشک‌کردن در کوره',
+    step_5_desc: 'بریکت‌ها به مدت ۴۸ ساعت در کوره حرارتی خشک می‌شوند تا رطوبت به زیر استاندارد صادراتی ۵٪ برسد.',
+
+    // Products
+    prod_sub: 'محصولات ما',
+    prod_title: 'زغال با کیفیت منتخب',
+    prod_desc: 'در اندازه‌های متنوع برای پاسخگویی به نیازهای خانگی تا تجاری و مجموعه‌های پذیرایی.',
+    prod_view_all: 'مشاهده کل کاتالوگ',
+    prod_unit_2kg: ' / ۲ کیلوگرم',
+    prod_unit_1kg: ' / ۱ کیلوگرم',
+    prod_name_bbq: 'زغال شواء ممتاز',
+    prod_spec_bbq: 'اندازه ۳ تا ۵ سانتی‌متر',
+    prod_name_shisha: 'زغال قلیان ممتاز',
+    prod_spec_shisha: 'اندازه ۲ تا ۳ سانتی‌متر',
+    prod_name_hex: 'زغال شش‌ضلعی',
+    prod_spec_hex: 'اندازه ۵ تا ۷ سانتی‌متر',
+    prod_name_briquet: 'بریکت قالبی ممتاز',
+    prod_spec_briquet: 'اندازه ۴×۴×۴ سانتی‌متر',
+
+    // Lab Analysis
+    lab_sub: 'استانداردهای آزمایشگاهی بین‌المللی',
+    lab_title: 'گواهی‌نامه‌ها و آنالیز شیمیایی محصولات',
+    lab_desc: 'ما به شفافیت کامل با شرکای صادراتی متعهدیم. هر سری تولید توسط آزمایشگاه‌های مستقل بین‌المللی آزمایش می‌شود.',
+    lab_fixed_carbon: 'کربن ثابت',
+    lab_ash_content: 'میزان خاکستر',
+    lab_moisture: 'میزان رطوبت',
+    lab_volatile: 'مواد فرّار',
+    lab_certified_by: 'تأیید شده توسط',
+    lab_global_passed: 'مطابق با استانداردهای جهانی',
+    lab_proximate: 'گزارش آنالیز تقریبی',
+    lab_original_approved: 'اصل و تأیید‌شده',
+    lab_cert_id: 'گواهی رسمی شماره NC-OX/',
+    lab_calorific_title: 'ارزش حرارتی (قدرت گرما)',
+    lab_calorific_desc: 'به‌لطف تراکم کربنی بالا، بیشترین گرمای کلاس خود را با سوختن یکنواخت از مغز تا سطح تولید می‌کند.',
+    lab_burntime_title: 'مدت‌زمان اشتعال',
+    lab_burntime_desc: 'ترکیب فشرده و طبیعی، ماندگاری طولانی شعله را بدون نیاز به شارژ مکرر تضمین می‌کند و هزینه عملیاتی را کاهش می‌دهد.',
+
+    // Logistics
+    log_sub: 'توزیع لجستیک جهانی',
+    log_title: 'اتصال خطوط صادراتی و مستندات کامل',
+    log_desc: 'با خطوط باری پرتردد از بندر تانجونگ پریوک (جاکارتا) به‌صورت منظم به مراکز لجستیک بین‌المللی خدمات می‌دهیم.',
+    log_frequent_port: 'بنادر مقصد پرتردد',
+    log_peta: 'نقشه صادرات',
+    log_transit_estimate: 'زمان تقریبی حمل',
+    log_recurrent_volume: 'حجم ماهانه مستمر',
+    log_recurrent_desc: 'ظرفیت تأمین منظم برای قراردادهای کوتاه‌مدت و سالانه.',
+    log_vessel_type: 'مشخصات کانتینر باری',
+    log_vessel_desc: 'در هر کانتینر بسته‌های سیلیکاژل مرغوب برای جذب رطوبت دریایی قرار داده می‌شود.',
+    log_docs_cleanclear: 'مدارک کامل و شفاف',
+    log_non_dg_remark: 'تمام بریکت‌ها به‌عنوان کالای غیرخطرناک (Non-DG) با گواهی آزمون SADT دسته‌بندی و تأیید شده‌اند.',
+    log_guarantee: 'تضمین تحویل ایمن مطابق استانداردهای دریایی بین‌المللی',
+
+    // Contact
+    contact_sub: 'شرکای تجاری',
+    contact_title: 'با ما تماس بگیرید',
+    contact_desc: 'چه به کانتینر کامل بریکت قلیان ممتاز نیاز دارید و چه زغال باکیفیت برای زنجیره رستوران‌ها، تیم صادراتی ما آماده ارائه بهترین پیشنهاد است.',
+    contact_headquarters: 'دفتر مرکزی',
+    contact_address: 'PT. Briket Charcoal Indonesia\nخیابان رایا کرونجو شماره ۱۸، سوکامولیا\nبالاراجا، تانگرانگ، بانتن ۱۵۶۱۰\nاندونزی',
+    contact_phone: 'تلفن / واتساپ',
+    contact_email: 'ایمیل صادرات',
+    contact_form_name: 'نام کامل',
+    contact_form_name_placeholder: 'نام کامل شما',
+    contact_form_email: 'آدرس ایمیل',
+    contact_form_email_placeholder: 'you@email.com',
+    contact_form_product: 'نوع محصول',
+    contact_form_msg: 'پیام یا میزان سفارش',
+    contact_form_msg_placeholder: 'حجم سفارش، بندر مقصد یا مشخصات ویژه را ذکر کنید...',
+    contact_form_submit: 'ارسال درخواست',
+    contact_other: 'سایر',
+    footer_tagline: 'تولید بهترین زغال ممتاز برای پایداری زمین و کارایی مطلق انرژی.',
+    footer_rights: 'کلیه حقوق محفوظ است.',
+
+    // SEO (per-language <title> + meta description, injected at runtime)
+    seo_title: 'زغال قلیان و باربیکیو ممتاز از پوست نارگیل — صادرات از اندونزی | Bricket Charcoal Indonesia',
+    seo_desc: 'بریکت زغال ممتاز پوست نارگیل برای قلیان و باربیکیو، صادرات جهانی از اندونزی. خاکستر سفید ۱.۹٪، کربن ثابت ۸۰٪+، سوختن ۶۰ تا ۱۲۰ دقیقه. نمونه رایگان — عمده، قیمت توافقی برای هر کانتینر.',
+  },
+  tr: {
+    // Navbar
+    nav_home: 'Ana Sayfa',
+    nav_about: 'Hakkımızda',
+    nav_products: 'Ürünler',
+    nav_features: 'Avantajlar',
+    nav_analysis: 'Laboratuvar Analizi',
+    nav_logistics: 'Lojistik',
+    nav_contact: 'İletişim',
+    nav_order_now: 'Sipariş Ver',
+    nav_search: 'Ürün Ara',
+    brand_sub: 'PREMIUM',
+
+    // Hero
+    hero_sub: 'MAKSIMUM SONUÇ İÇİN EN İYİ KALİTE',
+    hero_title_1: 'PREMIUM',
+    hero_title_2: 'KÖMÜR',
+    hero_desc: 'Yüksek kaliteli kömür; daha uzun yanma süresi, dengeli ısı ve çevre dostu kullanım için en iyi seçim.',
+    hero_btn_products: 'Ürünleri Gör',
+    hero_btn_video: 'Videoyu İzle',
+    hero_badge_env: 'Çevre',
+    hero_badge_env_sub: 'Çevre Dostu',
+    hero_badge_burn: 'Daha Dayanıklı',
+    hero_badge_burn_sub: 'Uzun Yanma',
+    hero_badge_guar: 'Garantili',
+    hero_badge_guar_sub: 'Test Edilmiş',
+    hero_customer_stats: '1.000+',
+    hero_customer_title: 'Mutlu Müşteri',
+
+    // Stats
+    stats_1_val: '%100',
+    stats_1_title: 'Premium Kalite',
+    stats_1_desc: 'Test edilmiş, özenle seçilmiş yüksek kaliteli kömür.',
+    stats_2_val: '8+ Saat',
+    stats_2_title: 'Daha Dayanıklı',
+    stats_2_desc: 'Tutarlı ısı ile dengeli yanma.',
+    stats_3_val: '1.000+',
+    stats_3_title: 'Mutlu Müşteri',
+    stats_3_desc: 'Müşteri güveni ve memnuniyeti önceliğimizdir.',
+    stats_4_val: 'Çevre Dostu',
+    stats_4_title: 'Doğa Dostu',
+    stats_4_desc: 'Doğaya zarar vermeden, doğal yöntemlerle üretilir.',
+
+    // About
+    about_sub: 'BİZ KİMİZ & TAAHHÜDÜMÜZ',
+    about_title: 'Sağlam Dürüstlükle Sürdürülebilir Enerji Sağlayıcısı',
+    about_desc_1: 'Bricket Charcoal Indonesia, Endonezya tarımını küresel ihracat pazarına taşıma vizyonuyla kuruldu. Yüksek kaliteli hindistan cevizi kabuğu ve odun kömürü üretip tedarik ediyor, tarımsal yan ürünleri değerlendirerek karbon ayak izini en aza indiriyoruz.',
+    about_desc_2: 'Hammadde tedarikini güvence altına almak ve kırsal ekonomiyi adil ticaret ilkeleriyle desteklemek için yüzlerce yerel çiftçi kooperatifiyle yakın çalışıyoruz.',
+    about_stat_1_val: '%0',
+    about_stat_1_title: 'Kimyasal Katkı',
+    about_stat_1_desc: 'Zararlı hızlı tutuşturucu kimyasallar içermez.',
+    about_stat_2_val: '< %2,5',
+    about_stat_2_title: 'Beyaz Kül Kalıntısı',
+    about_stat_2_desc: 'Minimum kalıntı ile temiz yanma.',
+    about_flow_title: 'ENTEGRE ÜRETİM AKIŞI',
+    about_certified: 'ISO 9001:2015 SERTİFİKALI',
+    about_audit: 'Açık Fabrika Denetim Politikası',
+
+    // Production Steps
+    step_1_title: 'Hammadde Tedariki & Hasat',
+    step_1_desc: 'Olgun, seçilmiş hindistan cevizi kabukları Java ve Sulawesi\'deki yerel üreticilerden doğrudan toplanır.',
+    step_2_title: 'Piroliz Karbonizasyon',
+    step_2_desc: 'Oksijensiz kontrollü yanma uçucu gazları uzaklaştırır ve yüksek sabit karbonlu yoğun kömür üretir.',
+    step_3_title: 'Öğütme & Eleme',
+    step_3_desc: 'Kömür nano incelikte toz haline getirilir ve toprak ile kumdan tamamen arındırmak için titizlikle elenir.',
+    step_4_title: 'Hidrolik Presleme',
+    step_4_desc: 'Organik tapyoka nişastası ile karıştırılıp yüksek hidrolik basınçla geometrik briketlere preslenir.',
+    step_5_title: 'Fırında Kurutma',
+    step_5_desc: 'Briketler 48 saat termal fırınlarda kurutularak nem %5 ihracat standardının altına indirilir.',
+
+    // Products
+    prod_sub: 'ÜRÜNLERİMİZ',
+    prod_title: 'Seçkin Kaliteli Kömür',
+    prod_desc: 'Evsel kullanımdan endüstriyel ve ağırlama sektörüne kadar her ihtiyaca uygun boyutlarda mevcuttur.',
+    prod_view_all: 'Tüm Kataloğu Gör',
+    prod_unit_2kg: ' / 2kg',
+    prod_unit_1kg: ' / 1kg',
+    prod_name_bbq: 'Premium Mangal Kömürü',
+    prod_spec_bbq: 'Boyut 3–5 cm',
+    prod_name_shisha: 'Premium Nargile Kömürü',
+    prod_spec_shisha: 'Boyut 2–3 cm',
+    prod_name_hex: 'Altıgen Kömür',
+    prod_spec_hex: 'Boyut 5–7 cm',
+    prod_name_briquet: 'Premium Blok Briket',
+    prod_spec_briquet: 'Boyut 4x4x4 cm',
+
+    // Lab Analysis
+    lab_sub: 'ULUSLARARASI LABORATUVAR STANDARTLARI',
+    lab_title: 'Ürünlerin Sertifikasyonu & Kimyasal Analizi',
+    lab_desc: 'İhracat ortaklarımıza tam şeffaflık taahhüt ediyoruz. Her üretim partisi bağımsız uluslararası laboratuvarlarda titizlikle test edilir.',
+    lab_fixed_carbon: 'Sabit Karbon',
+    lab_ash_content: 'Kül Oranı',
+    lab_moisture: 'Nem Oranı',
+    lab_volatile: 'Uçucu Madde',
+    lab_certified_by: 'Onaylayan',
+    lab_global_passed: 'KÜRESEL STANDARTLAR KARŞILANDI',
+    lab_proximate: 'Kısa Analiz Raporu',
+    lab_original_approved: 'ORİJİNAL ONAYLI',
+    lab_cert_id: 'Resmi Sertifika No. NC-OX/',
+    lab_calorific_title: 'KALORİFİK DEĞER (ISI GÜCÜ)',
+    lab_calorific_desc: 'Yüksek karbon yoğunluğu sayesinde sınıfının en yüksek ısısını, çekirdekten yüzeye eşit yanmayla üretir.',
+    lab_burntime_title: 'YANMA SÜRESİ',
+    lab_burntime_desc: 'Doğal ve sıkıştırılmış yapı, sık takviye gerektirmeden uzun süreli köz sağlar ve işletme maliyetini düşürür.',
+
+    // Logistics
+    log_sub: 'KÜRESEL LOJİSTİK DAĞITIMI',
+    log_title: 'İhracat Sevkiyat Bağlantıları & Eksiksiz Belgeler',
+    log_desc: 'Tanjung Priok Limanı\'ndan (Jakarta) uluslararası lojistik merkezlerine düzenli, yüksek frekanslı kargo bağlantıları işletiyoruz.',
+    log_frequent_port: 'SIK VARIŞ LİMANLARI',
+    log_peta: 'İHRACAT HARİTASI',
+    log_transit_estimate: 'Tahmini Transit',
+    log_recurrent_volume: 'AYLIK DÜZENLİ HACİM',
+    log_recurrent_desc: 'Kısa vadeli ve çok yıllık tedarik sözleşmelerini destekleyen güvenilir arz kapasitesi.',
+    log_vessel_type: 'Konteyner Kargo Özelliği',
+    log_vessel_desc: 'Deniz nemini nötralize etmek için her konteynere yüksek kaliteli silika jel paketleri yerleştirilir.',
+    log_docs_cleanclear: 'TEMİZ & EKSİKSİZ BELGELER',
+    log_non_dg_remark: 'Tüm briket hatları, geçerli SADT test sertifikalarıyla Tehlikesiz Madde (Non-DG) olarak resmen belgelendirilmiştir.',
+    log_guarantee: 'ULUSLARARASI DENİZCİLİK STANDARTLARINA GÖRE GÜVENLİ TESLİMAT GARANTİSİ',
+
+    // Contact
+    contact_sub: 'İŞ ORTAKLIĞI',
+    contact_title: 'Bize Ulaşın',
+    contact_desc: 'İster tam konteyner premium nargile briketi, ister restoran zinciriniz için toptan kaliteli kömür ihtiyacınız olsun, ihracat ekibimiz size en iyi teklifi sunmaya hazır.',
+    contact_headquarters: 'Genel Merkez',
+    contact_address: 'PT. Briket Charcoal Indonesia\nJl. Raya Kronjo No. 18, Sukamulya\nBalaraja, Tangerang, Banten 15610\nEndonezya',
+    contact_phone: 'Telefon / WhatsApp',
+    contact_email: 'İhracat E-postası',
+    contact_form_name: 'Ad Soyad',
+    contact_form_name_placeholder: 'Adınız ve Soyadınız',
+    contact_form_email: 'E-posta Adresi',
+    contact_form_email_placeholder: 'siz@email.com',
+    contact_form_product: 'Ürün Kategorisi',
+    contact_form_msg: 'Mesaj veya Hacim İhtiyacı',
+    contact_form_msg_placeholder: 'Sipariş hacmini, varış limanını veya özel spesifikasyonları belirtin...',
+    contact_form_submit: 'Talebi Gönder',
+    contact_other: 'Diğer',
+    footer_tagline: 'Küresel sürdürülebilirlik ve mutlak ısı verimliliği için premium kömür üretimi.',
+    footer_rights: 'Tüm Hakları Saklıdır.',
+
+    // SEO (per-language <title> + meta description, injected at runtime)
+    seo_title: 'Premium Nargile & Mangal Kömürü — Hindistan Cevizi Kömürü İhracatçısı | Bricket Charcoal Indonesia',
+    seo_desc: 'Nargile ve mangal için premium hindistan cevizi kabuğu briket kömürü, Endonezya\'dan dünyaya ihracat. Beyaz kül %1,9, sabit karbon %80+, 60–120 dk yanma. Ücretsiz numune — toptan, konteyner başına pazarlıklı fiyat.',
   }
 };
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
+// Canonical site origin (used for per-language canonical + og:url). Keep in sync
+// with index.html / sitemap.xml. ⚠️ Swap to the final domain at deploy time.
+const SITE_ORIGIN = 'https://bricketcharcoal.com';
+// Map each language to its Open Graph locale + URL path. English lives at root
+// (x-default); every other language sits under /<lang>/.
+const OG_LOCALE: Record<LanguageType, string> = {
+  en: 'en_US', id: 'id_ID', ar: 'ar_SA', fa: 'fa_IR', tr: 'tr_TR',
+};
+const langPath = (lang: LanguageType) => (lang === 'en' ? '/' : `/${lang}/`);
+
+const isSupported = (v: unknown): v is LanguageType =>
+  typeof v === 'string' && (SUPPORTED_LANGS as string[]).includes(v);
+
+// Detect the language embedded in the current URL path (/ar/, /fa/…) — this is
+// what makes the per-language prerendered pages resolve to the right language.
+const langFromPath = (): LanguageType | null => {
+  try {
+    const seg = window.location.pathname.split('/').filter(Boolean)[0];
+    return isSupported(seg) ? seg : null;
+  } catch (_) { return null; }
+};
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageType>(() => {
-    // Priority: ?lang= URL param (for hreflang / SEO deep links) → localStorage → 'id'.
+    // Priority: ?lang= param (deep links) → /<lang>/ path → saved choice →
+    // the lang baked into the prerendered <html lang> → English (default/x-default).
     try {
       const p = new URLSearchParams(window.location.search).get('lang');
-      if (p === 'id' || p === 'en' || p === 'ar') return p;
+      if (isSupported(p)) return p;
     } catch (_) {}
-    const saved = localStorage.getItem('arang_lang');
-    return (saved === 'id' || saved === 'en' || saved === 'ar') ? saved : 'id';
+    const fromPath = langFromPath();
+    if (fromPath) return fromPath;
+    try {
+      const saved = localStorage.getItem('arang_lang');
+      if (isSupported(saved)) return saved;
+    } catch (_) {}
+    try {
+      const docLang = document.documentElement.lang;
+      if (isSupported(docLang)) return docLang;
+    } catch (_) {}
+    return 'en';
   });
 
-  const [isRtl, setIsRtl] = useState<boolean>(language === 'ar');
+  const [isRtl, setIsRtl] = useState<boolean>(RTL_LANGS.includes(language));
 
   const setLanguage = (lang: LanguageType) => {
     setLanguageState(lang);
-    localStorage.setItem('arang_lang', lang);
+    try { localStorage.setItem('arang_lang', lang); } catch (_) {}
   };
 
   useEffect(() => {
-    setIsRtl(language === 'ar');
-    // Also set document attributes gracefully
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    const rtl = RTL_LANGS.includes(language);
+    setIsRtl(rtl);
+    // Document-level attributes (also captured by the prerenderer for crawlers).
+    document.documentElement.dir = rtl ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
+
+    // ── Per-language SEO meta injection ──────────────────────────────────────
+    // Google ranks on the page's actual content + meta. Rewrite title, description,
+    // canonical and Open Graph per language so each prerendered page (/, /ar/, /fa/,
+    // /tr/, /id/) is a proper self-referencing localized document — not a clone of
+    // the English root. hreflang alternates stay static in index.html (same set on
+    // every page, which is correct).
+    const dict = translations[language];
+    const title = dict.seo_title || document.title;
+    const desc = dict.seo_desc || '';
+    const canonical = SITE_ORIGIN + langPath(language);
+
+    document.title = title;
+
+    const setMeta = (selector: string, attr: 'content', value: string) => {
+      const el = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (el) el.setAttribute(attr, value);
+    };
+    setMeta('meta[name="description"]', 'content', desc);
+    setMeta('meta[property="og:title"]', 'content', title);
+    setMeta('meta[property="og:description"]', 'content', desc);
+    setMeta('meta[property="og:url"]', 'content', canonical);
+    setMeta('meta[property="og:locale"]', 'content', OG_LOCALE[language]);
+    setMeta('meta[name="twitter:title"]', 'content', title);
+    setMeta('meta[name="twitter:description"]', 'content', desc);
+
+    const linkCanonical = document.head.querySelector('link[rel="canonical"]');
+    if (linkCanonical) linkCanonical.setAttribute('href', canonical);
   }, [language]);
 
   const t = (key: string): string => {

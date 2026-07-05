@@ -15,15 +15,27 @@ import sys
 from playwright.sync_api import sync_playwright
 
 BASE = "http://localhost:3001"
-# (url-suffix, output-file). Default (id) page overwrites dist/index.html.
-# Per-language path-based prerender (/en/, /ar/) can be added later once the
-# server routes + language-from-path detection are wired.
+# (url-suffix, output-file). One localized static page per language.
+# English is primary → dist/index.html (site root / x-default). Every other
+# Middle-East language gets its own path: /ar/ (Gulf), /fa/ (Iran), /tr/ (Turkey),
+# /id/ (local). The SPA reads ?lang= to pick the language while rendering; the
+# server then serves each file at its matching /<lang>/ path (see server.ts).
 TARGETS = [
-    ("/", "dist/index.html"),
+    ("/?lang=en", "dist/index.html"),
+    ("/?lang=ar", "dist/ar/index.html"),
+    ("/?lang=fa", "dist/fa/index.html"),
+    ("/?lang=tr", "dist/tr/index.html"),
+    ("/?lang=id", "dist/id/index.html"),
 ]
 
 
 def render(page, url):
+    # Fresh storage each target so a previous language never leaks into the next.
+    try:
+        page.goto(BASE + "/", wait_until="domcontentloaded", timeout=45000)
+        page.evaluate("try { localStorage.clear() } catch (e) {}")
+    except Exception:
+        pass
     page.goto(BASE + url, wait_until="networkidle", timeout=45000)
     page.wait_for_timeout(1200)
     # Scroll through the page so `whileInView` sections reveal (opacity 0 -> 1).

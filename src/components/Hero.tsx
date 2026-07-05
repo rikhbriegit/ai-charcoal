@@ -23,10 +23,12 @@ export function Hero() {
     };
   }, []);
 
-  const simulatorLabel = 
-    language === 'ar' ? 'استعراض مجسم ثلاثي الأبعاد' : 
-    language === 'en' ? 'Interactive 3D Simulator' : 
-    'Simulasi Arang 3D Interaktif';
+  const simulatorLabel =
+    language === 'ar' ? 'استعراض مجسم ثلاثي الأبعاد' :
+    language === 'fa' ? 'شبیه‌ساز سه‌بعدی تعاملی' :
+    language === 'tr' ? 'Etkileşimli 3D Simülatör' :
+    language === 'id' ? 'Simulasi Arang 3D Interaktif' :
+    'Interactive 3D Simulator';
 
   return (
     <div id="home" className="relative bg-[#030303] min-h-screen flex items-center pt-24 pb-12 overflow-hidden">

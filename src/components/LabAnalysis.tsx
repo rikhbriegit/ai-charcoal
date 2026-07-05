@@ -15,7 +15,7 @@ export function LabAnalysis() {
       moisture: 6.8,
       volatile: 13.6,
       calorific: '7,200 Kcal/kg',
-      burnTime: language === 'ar' ? '٣ - ٤ ساعات' : (language === 'en' ? '3 - 4 Hours' : '3 - 4 Jam'),
+      burnTime: language === 'ar' ? '٣ - ٤ ساعات' : language === 'id' ? '3 - 4 Jam' : '3 - 4 Hours',
       certifiedBy: 'SGS Indonesia S.A.',
     },
     shisha: {
@@ -25,7 +25,7 @@ export function LabAnalysis() {
       moisture: 4.5,
       volatile: 11.1,
       calorific: '7,800 Kcal/kg',
-      burnTime: language === 'ar' ? '٢.٥ ساعة (بدون دخان)' : (language === 'en' ? '2.5 Hours (Smokeless)' : '2.5 Jam (Tanpa Asap)'),
+      burnTime: language === 'ar' ? '٢.٥ ساعة (بدون دخان)' : language === 'id' ? '2.5 Jam (Tanpa Asap)' : '2.5 Hours (Smokeless)',
       certifiedBy: 'TÜV Rheinland Group',
     },
     hexagonal: {
@@ -35,7 +35,7 @@ export function LabAnalysis() {
       moisture: 4.0,
       volatile: 9.4,
       calorific: '8,100 Kcal/kg',
-      burnTime: language === 'ar' ? '٤ - ٥ ساعات' : (language === 'en' ? '4 - 5 Hours' : '4 - 5 Jam'),
+      burnTime: language === 'ar' ? '٤ - ٥ ساعات' : language === 'id' ? '4 - 5 Jam' : '4 - 5 Hours',
       certifiedBy: 'PT. Sucofindo (Persero)',
     },
   };

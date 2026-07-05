@@ -1,16 +1,20 @@
 <!doctype html>
-<html lang="id">
+<!-- English is the primary/x-default language: B2B charcoal buyers across the
+     whole Middle East (Gulf, Iran, Turkey) most often search in English. The SPA
+     rewrites <html lang>, title, description, canonical & og per language at
+     runtime; the prerenderer bakes a localized static page per language path. -->
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bricket Charcoal Indonesia — Eksportir Arang Premium Indonesia</title>
+    <title>Premium Charcoal Briquettes — Coconut Shell Charcoal Exporter | Bricket Charcoal Indonesia</title>
     <meta
       name="description"
-      content="Eksportir arang briket batok kelapa premium dari Indonesia untuk shisha & BBQ. Abu putih rendah 1.9%, karbon tetap 80%+, bakar 60–120 menit. Melayani ekspor ke Timur Tengah & seluruh dunia — minta sample gratis (bayar ongkir DHL saja)."
+      content="Premium coconut shell charcoal briquettes for shisha (hookah) & BBQ, exported worldwide from Indonesia. White ash 1.9%, fixed carbon 80%+, 60–120 min burn. Free sample — wholesale, negotiable per container."
     />
     <meta
       name="keywords"
-      content="charcoal briquette, coconut charcoal, shisha charcoal, hookah charcoal, coco charcoal exporter, arang briket, arang batok kelapa, arang shisha, eksportir arang Indonesia, فحم شيشة, فحم جوز الهند, فحم طبيعي"
+      content="premium charcoal, premium briquettes, briquette charcoal, charcoal briquette, coconut charcoal, coconut shell charcoal, shisha charcoal, hookah charcoal, BBQ charcoal, charcoal exporter, charcoal supplier, coco charcoal, arang briket, arang batok kelapa, فحم شيشة, فحم جوز الهند, فحم طبيعي, زغال قلیان, نرگیله کول, nargile kömürü, mangal kömürü"
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#ea580c" />
@@ -18,19 +22,21 @@
     <!-- Open Graph / social share preview -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Bricket Charcoal Indonesia" />
-    <meta property="og:title" content="Bricket Charcoal Indonesia — Eksportir Arang Premium" />
+    <meta property="og:title" content="Premium Coconut Shell Charcoal Briquettes — Shisha & BBQ Exporter" />
     <meta
       property="og:description"
-      content="Arang briket batok kelapa premium untuk shisha & BBQ. Ekspor ke Timur Tengah & dunia. Sample gratis, kualitas ekspor."
+      content="Premium coconut shell charcoal briquettes for shisha & BBQ, exported worldwide from Indonesia. White ash 1.9%, fixed carbon 80%+. Free sample, wholesale export."
     />
-    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_SA" />
+    <meta property="og:locale:alternate" content="fa_IR" />
+    <meta property="og:locale:alternate" content="tr_TR" />
     <meta property="og:locale:alternate" content="id_ID" />
-    <meta property="og:locale:alternate" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bricket Charcoal Indonesia — Eksportir Arang Premium" />
+    <meta name="twitter:title" content="Premium Coconut Shell Charcoal Briquettes — Shisha & BBQ Exporter" />
     <meta
       name="twitter:description"
-      content="Arang briket batok kelapa premium untuk shisha & BBQ. Ekspor ke Timur Tengah & dunia."
+      content="Premium coconut shell charcoal briquettes for shisha & BBQ, exported worldwide from Indonesia. Free sample, wholesale export."
     />
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -41,9 +47,13 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:image" content="https://bricketcharcoal.com/og-image.jpg" />
-    <link rel="alternate" hreflang="id" href="https://bricketcharcoal.com/?lang=id" />
-    <link rel="alternate" hreflang="en" href="https://bricketcharcoal.com/?lang=en" />
-    <link rel="alternate" hreflang="ar" href="https://bricketcharcoal.com/?lang=ar" />
+    <!-- Path-based language alternates (stronger SEO signal than ?lang= params).
+         Each path is a separately prerendered, localized static page. -->
+    <link rel="alternate" hreflang="en" href="https://bricketcharcoal.com/" />
+    <link rel="alternate" hreflang="ar" href="https://bricketcharcoal.com/ar/" />
+    <link rel="alternate" hreflang="fa" href="https://bricketcharcoal.com/fa/" />
+    <link rel="alternate" hreflang="tr" href="https://bricketcharcoal.com/tr/" />
+    <link rel="alternate" hreflang="id" href="https://bricketcharcoal.com/id/" />
     <link rel="alternate" hreflang="x-default" href="https://bricketcharcoal.com/" />
     <!-- Structured data (JSON-LD) -->
     <script type="application/ld+json">
@@ -54,19 +64,20 @@
           "@type": "Organization",
           "@id": "https://bricketcharcoal.com/#org",
           "name": "Bricket Charcoal Indonesia",
+          "legalName": "PT. Briket Charcoal Indonesia",
           "url": "https://bricketcharcoal.com/",
           "logo": "https://bricketcharcoal.com/favicon.svg",
-          "description": "Eksportir arang briket batok kelapa premium dari Indonesia untuk shisha & BBQ.",
+          "description": "Premium coconut shell charcoal briquette exporter from Indonesia for shisha & BBQ.",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Jl. Industri No. 45",
-            "addressLocality": "Surabaya",
-            "addressRegion": "Jawa Timur",
-            "postalCode": "60221",
+            "streetAddress": "Jl. Raya Kronjo No. 18, Sukamulya",
+            "addressLocality": "Balaraja, Tangerang",
+            "addressRegion": "Banten",
+            "postalCode": "15610",
             "addressCountry": "ID"
           },
-          "areaServed": ["Middle East", "Worldwide"],
-          "knowsLanguage": ["id", "en", "ar"]
+          "areaServed": ["Middle East", "Saudi Arabia", "Iran", "Iraq", "Bahrain", "United Arab Emirates", "Turkey", "Worldwide"],
+          "knowsLanguage": ["en", "ar", "fa", "tr", "id"]
         },
         {
           "@type": "WebSite",
@@ -74,7 +85,7 @@
           "url": "https://bricketcharcoal.com/",
           "name": "Bricket Charcoal Indonesia",
           "publisher": { "@id": "https://bricketcharcoal.com/#org" },
-          "inLanguage": ["id", "en", "ar"]
+          "inLanguage": ["en", "ar", "fa", "tr", "id"]
         },
         {
           "@type": "Product",

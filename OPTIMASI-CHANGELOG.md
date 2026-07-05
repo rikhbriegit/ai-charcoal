@@ -143,6 +143,62 @@ Fix atas laporan pentest (`D:\pentest-live\charcoal\logs\`):
 
 - ✅ SSR/prerender — **selesai** (§10b). ✅ Domain `bricketcharcoal.com` terpasang. ✅ `og:image` ada.
 - Saat deploy: pastikan **redirect 301 `www` → non-www**, lalu **submit `sitemap.xml` ke Google Search Console**.
-- (Opsional) **Prerender per-bahasa path-based** (`/en/`, `/ar/`) untuk crawler no-JS versi Arab/Inggris — perlu tambah route server + deteksi bahasa dari path. Sekarang default (id) yang di-prerender; Google (jalanin JS) tetap dapat semua bahasa via hreflang + `?lang=`.
+- ✅ **Prerender per-bahasa path-based** — **selesai** (§12). ✅ **Farsi + Turki** ditambahkan (§12).
 - (Opsional) Default **bahasa Arab (RTL)** untuk pasar Timur Tengah — perlu cek layout RTL.
 - (Opsional) `og:image` per-bahasa / gambar OG berbranding (sekarang pakai foto produk hexagon).
+
+---
+
+## 12. Multi-bahasa Timur Tengah (English-first) + fix alamat 🌍
+
+> Sesi: **5 Juli 2026**. Alasan: Timur Tengah **bukan cuma Arab** — Iran = Persia (Farsi), Turki = Turki. Dan pembeli B2B ekspor paling banyak mencari dalam **bahasa Inggris** ("premium charcoal", "briquette charcoal", "coconut shell charcoal"). Target: kata kunci Inggris jadi utama + jangkau semua bahasa Gulf/Iran/Turki.
+
+### 12.1 Bahasa baru: Farsi (fa) + Turki (tr)
+- `LanguageContext.tsx`: `LanguageType` → `'id' | 'en' | 'ar' | 'fa' | 'tr'`. Ditambah **blok terjemahan penuh fa & tr** (Navbar, Hero, Stats, About, Production Steps, Products, Lab, Logistics, Contact, Footer).
+- **RTL** sekarang untuk **`ar` DAN `fa`** (Persia juga kanan-ke-kiri) via `RTL_LANGS = ['ar','fa']`.
+- Switcher bahasa (`Navbar.tsx`, desktop + mobile) → **5 tombol**, urutan English dulu: `['en','ar','fa','tr','id']`.
+- Widget chat (`AiChatWidget.tsx`): string header/placeholder/welcome/quick-actions fa & tr; quick-prompt dikirim **dalam bahasa UI** agar AI membalas di bahasa yang sama (di-refactor ke map per-bahasa).
+
+### 12.2 English-first (kata kunci uang)
+- `index.html`: `<html lang="en">`, **title/description/OG/Twitter → Inggris** (title: "Premium Charcoal Briquettes — Coconut Shell Charcoal Exporter"). `og:locale` utama **`en_US`** + alternate ar/fa/tr/id.
+- `keywords` diperluas: `premium charcoal, premium briquettes, briquette charcoal, coconut shell charcoal, shisha/hookah/BBQ charcoal, charcoal exporter/supplier` + istilah Arab/Persia/Turki (`فحم شيشة`, `زغال قلیان`, `nargile kömürü`, `mangal kömürü`). *(Catatan: Google mengabaikan meta keywords sejak 2009 — ranking dari isi body; keyword ada di judul & konten tiap bahasa.)*
+- Komponen non-`t()` yang tadinya jatuh ke **Indonesia** untuk fa/tr (ExportLogistics, LabAnalysis, Hero simulator, Contact alert) → default **Inggris** (`ar` & `id` eksplisit, sisanya Inggris). Halaman fa/tr tidak lagi bocor teks Indonesia.
+
+### 12.3 Prerender per-bahasa + routing (yang dibaca Google)
+- `scripts/prerender.py`: render **5 halaman terlokalisasi** → English = `dist/index.html` (root/x-default), lalu `dist/ar|fa|tr|id/index.html`. localStorage dibersihkan tiap target agar bahasa tidak bocor antar-render.
+- `server.ts`: route `/(id|ar|fa|tr)(/.*)?` → sajikan `dist/<lang>/index.html` (fallback ke root English). `express.static` handle `/ar/` (301 dari `/ar`); regex handle deep-path.
+- **SEO meta dinamis per bahasa** (`LanguageContext` effect): title, description, **canonical self-referencing** (`/`, `/ar/`, `/fa/`, `/tr/`, `/id/`), `og:title/description/url/locale`, twitter — di-rewrite sesuai bahasa lalu **ikut ter-bake saat prerender**. Tiap halaman jadi dokumen terlokalisasi mandiri, bukan klon English.
+
+### 12.4 hreflang + sitemap (5 bahasa, path-based)
+- `index.html` hreflang: `en → /`, `ar → /ar/`, `fa → /fa/`, `tr → /tr/`, `id → /id/`, `x-default → /` (lebih kuat dari `?lang=`).
+- `public/sitemap.xml`: **5 URL** dengan cluster alternate lengkap & resiprokal di tiap entri.
+- JSON-LD `knowsLanguage`/`inLanguage` → `en,ar,fa,tr,id`; `areaServed` ditambah Saudi/Iran/Iraq/Bahrain/UAE/Turkey.
+
+### 12.5 FIX ALAMAT (kritis) — dummy Surabaya → alamat resmi ✅
+> Ditemukan saat cross-check (review claude.com): sisa **alamat dummy template** masih tersebar padahal alamat resmi sudah diganti di sebagian tempat. Untuk B2B ekspor, alamat tak konsisten = trust importir hancur.
+
+**Alamat resmi (satu-satunya, dipakai konsisten):**
+> **PT. Briket Charcoal Indonesia — Jl. Raya Kronjo No. 18, Sukamulya, Balaraja, Tangerang, Banten 15610, Indonesia.** Pelabuhan muat: **Tanjung Priok (Jakarta)**.
+
+Diperbaiki di: **JSON-LD `index.html`** (+ `legalName`), **`contact_address` 5 bahasa** (`LanguageContext`), **`log_desc` 5 bahasa** (Tanjung Perak/Surabaya → Tanjung Priok/Jakarta), **`ExportLogistics`** (origin "Surabaya (SUB)" → "Jakarta (JKT)"), **persona AI Arab `server.ts`** (alamat + kota kunjungan pabrik + keyword trigger). `Contact.tsx` & `SeoAdsContext.tsx` sudah benar sebelumnya.
+- Bonus: bug alert form Contact (`t('language')` yang tak pernah cocok → selalu Indonesia) diperbaiki pakai `language` langsung (5 bahasa).
+- ✅ Verifikasi: `grep` "Surabaya/Tanjung Perak/Jl. Industri/60221" di seluruh source = **0** (kecuali `/backups`).
+
+### 12.6 Verifikasi (build + prerender 5/5)
+Tiap path dicek dari HTML mentah (yang dibaca Google):
+
+| Path | `<html>` | title | canonical | og:locale | alamat |
+|---|---|---|---|---|---|
+| `/` | `lang=en dir=ltr` | Premium Charcoal… (EN) | `/` | `en_US` | Tangerang ✅ |
+| `/ar/` | `lang=ar dir=rtl` | فحم شيشة… | `/ar/` | `ar_SA` | Tangerang ✅ |
+| `/fa/` | `lang=fa dir=rtl` | زغال قلیان… | `/fa/` | `fa_IR` | Tangerang ✅ |
+| `/tr/` | `lang=tr dir=ltr` | Nargile & Mangal Kömürü… | `/tr/` | `tr_TR` | Tangerang ✅ |
+| `/id/` | `lang=id dir=ltr` | Eksportir Arang… | `/id/` | `id_ID` | Tangerang ✅ |
+
+- hreflang cluster lengkap & resiprokal di semua halaman. Keyword pasar Turki **"Nargile Kömürü" & "Mangal Kömürü"** terbukti ada di body `/tr/`. Surabaya = 0 di semua.
+
+### 12.7 Realita & sisa yang perlu manusia
+- **Peringkat organik** kata umum ("charcoal", "فحم") tetap perang bertahun-tahun (butuh backlink + waktu). Yang cepat: **Google Ads** targeting Gulf (Iran dikecualikan — sanksi AS; ke Iran andalkan organik Farsi).
+- **QA native speaker** fa & tr (copy machine-generated) — disarankan 1 penutur asli baca halaman utama sebelum kampanye.
+- **Iran/pembayaran:** perbankan Iran terputus dari SWIFT → transaksi biasanya via perantara UEA. Disarankan siapkan jawaban standar di persona AI untuk skenario ini (belum dibuat).
+- Domain di canonical/hreflang/sitemap masih `bricketcharcoal.com` — **konfirmasi domain final saat deploy**. `SITE_ORIGIN` di `LanguageContext.tsx` juga.

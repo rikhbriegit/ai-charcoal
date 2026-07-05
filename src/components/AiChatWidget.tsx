@@ -72,6 +72,40 @@ Please type your inquiries below!`,
       errorMsg: 'فشل الاتصال بمساعد الذكاء الاصطناعي. الرجاء المحاولة مجدداً.',
       resetConfirm: 'إعادة تعيين المحادثة؟',
     },
+    fa: {
+      botName: 'PremiumCharcoal Assistant',
+      headerDesc: 'پرسش درباره محصولات و سفارش زغال ممتاز',
+      placeholder: 'چطور می‌توانم کمکتان کنم؟ اینجا بنویسید...',
+      tooltip: 'کمک می‌خواهید؟ همین‌جا از PremiumCharcoal بپرسید!',
+      welcome: `سلام! من **PremiumCharcoal** هستم، دستیار هوش مصنوعی رسمی Bricket Charcoal Indonesia.
+امروز چطور می‌توانم کمکتان کنم؟
+* می‌توانید **درباره انواع زغال و قیمت‌ها** بپرسید.
+* می‌توانید مستقیماً **سفارش ثبت کنید**.
+لطفاً سؤالتان را بنویسید!`,
+      askProducts: 'محصولات و مشخصات',
+      howToOrder: 'چگونه سفارش دهم؟',
+      orderBbq: 'سفارش زغال باربیکیو ممتاز',
+      orderShisha: 'سفارش زغال قلیان ممتاز',
+      errorMsg: 'خطا در اتصال. لطفاً لحظاتی بعد دوباره تلاش کنید.',
+      resetConfirm: 'گفتگو از نو شروع شود؟',
+    },
+    tr: {
+      botName: 'PremiumCharcoal Assistant',
+      headerDesc: 'Ürünleri sorun & premium kömür sipariş edin',
+      placeholder: 'Size nasıl yardımcı olabiliriz? Buraya yazın...',
+      tooltip: 'Yardım mı lazım? PremiumCharcoal\'a buradan sorun!',
+      welcome: `Merhaba! Ben **PremiumCharcoal**, Bricket Charcoal Indonesia'nın resmi yapay zeka asistanıyım.
+Bugün size nasıl yardımcı olabilirim?
+* **Kömür ürünlerimiz ve fiyatları** hakkında soru sorabilirsiniz.
+* Doğrudan benimle **sipariş verebilirsiniz**.
+Lütfen sorunuzu aşağıya yazın!`,
+      askProducts: 'Ürünler & Özellikler',
+      howToOrder: 'Nasıl sipariş verilir?',
+      orderBbq: 'Premium Mangal Kömürü Sipariş Et',
+      orderShisha: 'Premium Nargile Kömürü Sipariş Et',
+      errorMsg: 'Bağlantı hatası. Lütfen birazdan tekrar deneyin.',
+      resetConfirm: 'Sohbet sıfırlansın mı?',
+    },
   }[language] || {
     botName: 'PremiumCharcoal Assistant',
     headerDesc: 'Ask about products & order premium charcoal',
@@ -355,12 +389,50 @@ Please type your inquiries below!`,
     return parts.length > 0 ? parts : text;
   };
 
-  // Chips suggestions content
+  // Chips suggestions content. The prompt is sent in the CURRENT UI language so
+  // the AI (which auto-detects the message language) replies in that language.
+  const quickPrompts = {
+    id: {
+      askProducts: 'Tolong jelaskan produk arang Bricket Charcoal Indonesia dan spesifikasinya.',
+      howToOrder: 'Bagaimana cara pemesanan arang di Bricket Charcoal Indonesia?',
+      orderBbq: 'Halo, saya ingin memesan Arang BBQ Premium.',
+      orderShisha: 'Pesan Arang Shisha Premium.',
+    },
+    ar: {
+      askProducts: 'أرجو شرح أنواع الفحم ومواصفاتها بالتفصيل.',
+      howToOrder: 'كيف يمكنني تقديم طلب شراء؟',
+      orderBbq: 'مرحباً، أود تقديم طلب لشراء فحم الشواء الممتاز.',
+      orderShisha: 'أود طلب فحم الشيشة الفاخر من فضلكم.',
+    },
+    fa: {
+      askProducts: 'لطفاً انواع زغال Bricket Charcoal Indonesia و مشخصات آن‌ها را توضیح دهید.',
+      howToOrder: 'چگونه می‌توانم سفارش ثبت کنم؟',
+      orderBbq: 'سلام، می‌خواهم زغال باربیکیو ممتاز سفارش دهم.',
+      orderShisha: 'می‌خواهم زغال قلیان ممتاز سفارش دهم.',
+    },
+    tr: {
+      askProducts: 'Lütfen Bricket Charcoal Indonesia ürünlerini ve özelliklerini açıklayın.',
+      howToOrder: 'Nasıl sipariş verebilirim?',
+      orderBbq: 'Merhaba, Premium Mangal Kömürü sipariş etmek istiyorum.',
+      orderShisha: 'Premium Nargile Kömürü sipariş etmek istiyorum.',
+    },
+    en: {
+      askProducts: 'Please explain Bricket Charcoal Indonesia products and their detailed specifications.',
+      howToOrder: 'How can I place an order for your charcoal?',
+      orderBbq: 'Hello, I want to place an order for Premium BBQ Charcoal.',
+      orderShisha: 'Order Premium Shisha Charcoal.',
+    },
+  }[language] || {
+    askProducts: 'Please explain Bricket Charcoal Indonesia products and their detailed specifications.',
+    howToOrder: 'How can I place an order for your charcoal?',
+    orderBbq: 'Hello, I want to place an order for Premium BBQ Charcoal.',
+    orderShisha: 'Order Premium Shisha Charcoal.',
+  };
   const suggestions = [
-    { text: strings.askProducts, prompt: language === 'id' ? 'Tolong jelaskan produk arang Bricket Charcoal Indonesia dan spesifikasinya.' : language === 'ar' ? 'أرجو شرح أنواع الفحم ومواصفاتها بالتفصيل.' : 'Please explain Bricket Charcoal Indonesia products and their detailed specifications.' },
-    { text: strings.howToOrder, prompt: language === 'id' ? 'Bagaimana cara pemesanan arang di Bricket Charcoal Indonesia?' : language === 'ar' ? 'كيف يمكنني تقديم طلب شراء؟' : 'How can I place an order for your charcoal?' },
-    { text: strings.orderBbq, prompt: language === 'id' ? 'Halo, saya ingin memesan Arang BBQ Premium.' : language === 'ar' ? 'مرحباً، أود تقديم طلب لشراء فحم الشواء الممتاز.' : 'Hello, I want to place an order for Premium BBQ Charcoal.' },
-    { text: strings.orderShisha, prompt: language === 'id' ? 'Pesan Arang Shisha Premium.' : language === 'ar' ? 'أود طلب فحم الشيشة الفاخر من فضلكم.' : 'Order Premium Shisha Charcoal.' },
+    { text: strings.askProducts, prompt: quickPrompts.askProducts },
+    { text: strings.howToOrder, prompt: quickPrompts.howToOrder },
+    { text: strings.orderBbq, prompt: quickPrompts.orderBbq },
+    { text: strings.orderShisha, prompt: quickPrompts.orderShisha },
   ];
 
   return (

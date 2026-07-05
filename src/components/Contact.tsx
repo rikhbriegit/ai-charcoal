@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useSeoAds } from '../context/SeoAdsContext';
 
 export function Contact() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { triggerConversion } = useSeoAds();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,7 +18,13 @@ export function Contact() {
     // Trigger conversion tracking event with input data
     triggerConversion(name, email, product || t('prod_name_bbq'));
     
-    alert(t('language') === 'ar' ? 'تم تقديم النموذج بنجاح!' : (t('language') === 'en' ? 'Form submitted successfully!' : 'Pesan berhasil dikirim!'));
+    alert(
+      language === 'ar' ? 'تم تقديم النموذج بنجاح!' :
+      language === 'fa' ? 'فرم با موفقیت ارسال شد!' :
+      language === 'tr' ? 'Form başarıyla gönderildi!' :
+      language === 'id' ? 'Pesan berhasil dikirim!' :
+      'Form submitted successfully!'
+    );
     
     // Reset form fields
     setName('');

@@ -439,10 +439,10 @@ Pilihan produk unggulan Bricket Charcoal Indonesia:
   }
 
   // Handle locations / general addresses
-  if (/alamat|kantor|lokasi|surabaya|pabrik|jalan|industri|jl|address|location|headquarters|factory|lokas/i.test(text)) {
+  if (/alamat|kantor|lokasi|tangerang|balaraja|kronjo|jakarta|pabrik|jalan|jl|address|location|headquarters|factory|lokas/i.test(text)) {
     if (isArabic) {
       return `يقع مقر شركة **Bricket Charcoal Indonesia** في:
-- **العنوان**: شارع إندستري رقم 45، سورابايا، جاوة الشرقية 60221، إندونيسيا.
+- **العنوان**: شارع رايا كرونجو رقم 18، سوكامويا، بالاراجا، تانجيرانج، بانتين 15610، إندونيسيا.
 - **ميناء الشحن**: ميناء تانجونغ بريوك (جاكرتا). نشحن عالمياً مع تزويد العميل بكامل الوثائق الرسمية والموافقات الأمنية.`;
     } else if (isEnglish) {
       return `Bricket Charcoal Indonesia factory and headquarters are located at:
@@ -490,7 +490,7 @@ Harga **nego** tergantung bentuk, volume & pelabuhan tujuan (kontainer 20ft/40ft
   if (isArabic) {
     return `أهلاً بك في **Bricket Charcoal Indonesia** — مصدّر الفحم الفاخر من إندونيسيا! أنا نوسابوت، مختص المبيعات لديك. عرضان حصريان لك:
 * 🔥 **عينة فحم مجانية**: نرسل لك عينة فحم فاخرة إلى أي مكان في العالم **مجاناً** — تدفع فقط تكلفة شحن DHL!
-* ✈️ **زيارة مصنع مجانية**: قم بزيارة مصنعنا في سورابايا مع **إقامة مجانية** لمعاينة الجودة بنفسك.
+* ✈️ **زيارة مصنع مجانية**: قم بزيارة مصنعنا في تانجيرانج مع **إقامة مجانية** لمعاينة الجودة بنفسك.
 اسألني عن المنتجات أو الأسعار، واكتب "أريد عينة مجانية" لأبدأ في ترتيب طلبك!`;
   } else if (isEnglish) {
     return `Welcome to **Bricket Charcoal Indonesia** — premium charcoal exporter from Indonesia! I am PremiumCharcoal, your sales specialist. Two exclusive offers for you:
@@ -522,6 +522,17 @@ async function setupServer() {
       next();
     });
     app.use(express.static(distPath));
+    // Per-language prerendered pages. express.static already serves the localized
+    // dist/<lang>/index.html for an exact "/<lang>/" request; this handles the
+    // no-trailing-slash and any deeper "/<lang>/..." path, falling back to the
+    // English root page if that language wasn't prerendered.
+    app.get(/^\/(id|ar|fa|tr)(\/.*)?$/, (req, res) => {
+      const lang = req.path.split('/').filter(Boolean)[0];
+      const langIndex = path.join(distPath, lang, 'index.html');
+      res.sendFile(langIndex, (err) => {
+        if (err) res.sendFile(path.join(distPath, 'index.html'));
+      });
+    });
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });

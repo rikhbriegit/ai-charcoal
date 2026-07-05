@@ -105,7 +105,7 @@ export function Navbar({ onOpenAdmin }: NavbarProps) {
               <span className={`transition-all duration-300 ${isScrolled ? 'text-zinc-400 p-0.5' : 'text-zinc-500 p-1.5'}`}>
                 <Languages className={`transition-all duration-300 ${isScrolled ? 'h-2.5 w-2.5' : 'h-3.5 w-3.5'}`} />
               </span>
-              {(['id', 'en', 'ar'] as const).map((lang) => (
+              {(['en', 'ar', 'fa', 'tr', 'id'] as const).map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
@@ -175,7 +175,7 @@ export function Navbar({ onOpenAdmin }: NavbarProps) {
             
             {/* Language switch on mobile directly on bar */}
             <div className={`flex items-center p-0.5 rounded-full transition-colors border ${isScrolled ? 'bg-zinc-100 border-zinc-200' : 'bg-zinc-950/80 border-zinc-850'}`}>
-              {(['id', 'en', 'ar'] as const).map((lang) => (
+              {(['en', 'ar', 'fa', 'tr', 'id'] as const).map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}

@@ -7,33 +7,38 @@ export function ExportLogistics() {
   const { t, language, isRtl } = useLanguage();
   const [activePort, setActivePort] = useState(0);
 
+  // language-keyed value with English fallback (covers fa/tr which have no
+  // bespoke string here — English is the primary language, never Indonesian).
+  const L = (ar: string, en: string, id: string) =>
+    language === 'ar' ? ar : language === 'id' ? id : en;
+
   const destinations = [
     {
-      region: language === 'ar' ? 'الشرق الأوسط' : (language === 'en' ? 'Middle East' : 'Timur Tengah'),
+      region: L('الشرق الأوسط', 'Middle East', 'Timur Tengah'),
       port: 'Jeddah Islamic Port',
-      time: language === 'ar' ? '١٨ يوماً' : (language === 'en' ? '18 Days' : '18 Hari'),
-      vol: language === 'ar' ? '١٢٠+ حاوية / شهرياً' : (language === 'en' ? '120+ Containers / Mo' : '120+ Kontainer / Bln'),
+      time: L('١٨ يوماً', '18 Days', '18 Hari'),
+      vol: L('١٢٠+ حاوية / شهرياً', '120+ Containers / Mo', '120+ Kontainer / Bln'),
       docs: 'SGS Audit, Certificate of Origin, Phytosanitary, MSDS',
     },
     {
-      region: language === 'ar' ? 'شمال أوروبا' : (language === 'en' ? 'North Europe' : 'Eropa Utara'),
+      region: L('شمال أوروبا', 'North Europe', 'Eropa Utara'),
       port: 'Port of Rotterdam',
-      time: language === 'ar' ? '٢٦ يوماً' : (language === 'en' ? '26 Days' : '26 Hari'),
-      vol: language === 'ar' ? '٨٠+ حاوية / شهرياً' : (language === 'en' ? '80+ Containers / Mo' : '80+ Kontainer / Bln'),
+      time: L('٢٦ يوماً', '26 Days', '26 Hari'),
+      vol: L('٨٠+ حاوية / شهرياً', '80+ Containers / Mo', '80+ Kontainer / Bln'),
       docs: 'MSDS, REACH Registration, V-Legal Timber Certificate',
     },
     {
-      region: language === 'ar' ? 'شرق آسيا' : (language === 'en' ? 'East Asia' : 'Asia Timur'),
+      region: L('شرق آسيا', 'East Asia', 'Asia Timur'),
       port: 'Tokyo Bay Port',
-      time: language === 'ar' ? '٩ أيام' : (language === 'en' ? '9 Days' : '9 Hari'),
-      vol: language === 'ar' ? '١٥٠+ حاوية / شهرياً' : (language === 'en' ? '150+ Containers / Mo' : '150+ Kontainer / Bln'),
+      time: L('٩ أيام', '9 Days', '9 Hari'),
+      vol: L('١٥٠+ حاوية / شهرياً', '150+ Containers / Mo', '150+ Kontainer / Bln'),
       docs: 'Phytosanitary Certificate, Custom Clearance approval',
     },
     {
-      region: language === 'ar' ? 'أمريكا الشمالية' : (language === 'en' ? 'North America' : 'Amerika Utara'),
+      region: L('أمريكا الشمالية', 'North America', 'Amerika Utara'),
       port: 'Los Angeles Port',
-      time: language === 'ar' ? '٢٤ يوماً' : (language === 'en' ? '24 Days' : '24 Hari'),
-      vol: language === 'ar' ? '٦٠+ حاوية / شهرياً' : (language === 'en' ? '60+ Containers / Mo' : '60+ Kontainer / Bln'),
+      time: L('٢٤ يوماً', '24 Days', '24 Hari'),
+      vol: L('٦٠+ حاوية / شهرياً', '60+ Containers / Mo', '60+ Kontainer / Bln'),
       docs: 'Fumigation Certificate, Ocean Bill of Lading, MSDS',
     },
   ];
@@ -106,7 +111,7 @@ export function ExportLogistics() {
                 <div>
                   <span className="text-xs text-zinc-500 uppercase font-bold tracking-widest">{t('log_peta')}</span>
                   <p className="text-2xl font-display font-bold text-white mt-1">
-                    Surabaya (SUB) <ArrowRight className="inline h-5 w-5 text-orange-500 mx-2" /> {destinations[activePort].port}
+                    Jakarta (JKT) <ArrowRight className="inline h-5 w-5 text-orange-500 mx-2" /> {destinations[activePort].port}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 bg-orange-600/10 border border-orange-500/20 text-orange-400 text-xs font-bold px-4 py-2 rounded-full justify-center">
