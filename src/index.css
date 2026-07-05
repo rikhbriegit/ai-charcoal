@@ -17,6 +17,7 @@ body {
 /* Premium Ultra-Lux Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #020202;
@@ -28,6 +29,10 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #ea580c;
 }
+
+/* Fully hide the scrollbar where requested (e.g. the suggestion chips row). */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 /* Custom ember/shimmer effect for a luxury 10-billion vibe */
 @keyframes emberGlow {

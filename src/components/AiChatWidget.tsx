@@ -7,6 +7,7 @@ interface Message {
   role: 'user' | 'model';
   text: string;
   timestamp: string;
+  full?: string; // when set, `text` is typed out char-by-char toward `full` (typewriter effect)
 }
 
 export function AiChatWidget() {
@@ -21,11 +22,11 @@ export function AiChatWidget() {
   // Multilingual Strings
   const strings = {
     id: {
-      botName: 'NusaBot ASISTEN',
+      botName: 'PremiumCharcoal Assistant',
       headerDesc: 'Tanya produk & pesan arang premium',
       placeholder: 'Ada yang bisa dibantu? Ketik di sini...',
-      tooltip: 'Butuh bantuan? Tanya NusaBot di sini!',
-      welcome: `Halo! Saya **NusaBot**, AI Asisten resmi Nusantara Charcoal. 
+      tooltip: 'Butuh bantuan? Tanya PremiumCharcoal di sini!',
+      welcome: `Halo! Saya **PremiumCharcoal**, AI Asisten resmi Bricket Charcoal Indonesia. 
 Ada yang bisa saya bantu hari ini? 
 * Anda bisa **bertanya tentang jenis produk & harga** arang kami.
 * Anda bisa **memesan produk** kami secara langsung. 
@@ -34,15 +35,15 @@ Silakan ketik pertanyaan Anda!`,
       howToOrder: 'Cara memesan disini?',
       orderBbq: 'Pesan Arang BBQ Premium',
       orderShisha: 'Pesan Arang Shisha Premium',
-      errorMsg: 'Ada kendala koneksi ke NusaBot. Silakan coba sesaat lagi.',
+      errorMsg: 'Ada kendala koneksi ke PremiumCharcoal. Silakan coba sesaat lagi.',
       resetConfirm: 'Reset percakapan?',
     },
     en: {
-      botName: 'NusaBot ASSISTANT',
+      botName: 'PremiumCharcoal Assistant',
       headerDesc: 'Ask about products & order premium charcoal',
       placeholder: 'Let us help you... Type message...',
-      tooltip: 'Need help? Ask NusaBot here!',
-      welcome: `Hello! I am **NusaBot**, the official AI Assistant of Nusantara Charcoal. 
+      tooltip: 'Need help? Ask PremiumCharcoal here!',
+      welcome: `Hello! I am **PremiumCharcoal**, the official AI Assistant of Bricket Charcoal Indonesia. 
 How can I help you today? 
 * You can **ask about our charcoal products & prices**.
 * You can **place an order** directly with me.
@@ -55,11 +56,11 @@ Please type your inquiries below!`,
       resetConfirm: 'Reset chat history?',
     },
     ar: {
-      botName: 'مساعد نوسابوت الذكي',
+      botName: 'PremiumCharcoal Assistant',
       headerDesc: 'استفسار عن المنتجات وطلب فحم فاخر',
       placeholder: 'كيف يمكنني مساعدتك؟ اكتب هنا...',
-      tooltip: 'مساعدة؟ اسأل نوسابوت هنا!',
-      welcome: `مرحباً بك! أنا **نوسابوت**، المساعد الذكي لشركة Nusantara Charcoal.
+      tooltip: 'مساعدة؟ اسأل PremiumCharcoal هنا!',
+      welcome: `مرحباً بك! أنا **PremiumCharcoal**، المساعد الذكي لشركة Bricket Charcoal Indonesia.
 كيف يمكنني مساعدتك اليوم؟
 * يمكنك **الاستفسار عن أنواع الفحم المتاحة وأسعارها**.
 * يمكنك **تقديم طلب مباشرة لشراء الفحم**.
@@ -72,10 +73,10 @@ Please type your inquiries below!`,
       resetConfirm: 'إعادة تعيين المحادثة؟',
     },
   }[language] || {
-    botName: 'NusaBot ASSISTANT',
+    botName: 'PremiumCharcoal Assistant',
     headerDesc: 'Ask about products & order premium charcoal',
     placeholder: 'Type message...',
-    tooltip: 'Need help? Ask NusaBot here!',
+    tooltip: 'Need help? Ask PremiumCharcoal here!',
     welcome: 'Hello! How can I help you today?',
     askProducts: 'Ask Products',
     howToOrder: 'How to Order?',
@@ -93,34 +94,51 @@ Please type your inquiries below!`,
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize messages with welcome if empty
+  // Initialize with a fresh welcome message. We intentionally DO NOT persist or
+  // restore chat history — every page load starts clean so the panel never piles
+  // up old conversations. (Purge any leftover from earlier versions.)
   useEffect(() => {
-    if (messages.length === 0) {
-      // Look for saved session messages
-      const saved = sessionStorage.getItem('rang_chat_history');
-      if (saved) {
-        try {
-          setMessages(JSON.parse(saved));
-          return;
-        } catch (_) {}
-      }
-      
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      setMessages([
-        {
-          role: 'model',
-          text: strings.welcome,
-          timestamp: now,
-        },
-      ]);
-    }
-  }, [language, messages.length]);
+    // Show the welcome in the CURRENT site language, and refresh it if the visitor
+    // toggles language BEFORE typing anything. Once they've sent a message we leave
+    // the conversation intact — their replies auto-detect the language they write in.
+    const hasUserMsg = messages.some((m) => m.role === 'user');
+    if (hasUserMsg) return;
+    try { sessionStorage.removeItem('rang_chat_history'); } catch (_) {}
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setMessages([
+      {
+        role: 'model',
+        text: strings.welcome,
+        timestamp: now,
+      },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
-  // Persist messages in session
+  // Typewriter effect: reveal the last bot message ONE WORD at a time at a calm,
+  // human pace with slight jitter (~90–150ms/word) so it reads like a real person
+  // composing a reply, not an instant data dump.
   useEffect(() => {
-    if (messages.length > 1) {
-      sessionStorage.setItem('rang_chat_history', JSON.stringify(messages));
-    }
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== 'model' || last.full === undefined) return;
+    const fullWords = last.full.split(' ');
+    const shownWords = last.text.length === 0 ? 0 : last.text.split(' ').length;
+    if (shownWords >= fullWords.length) return;
+
+    const timer = setTimeout(() => {
+      setMessages((prev) => {
+        const copy = [...prev];
+        const i = copy.length - 1;
+        const m = copy[i];
+        if (!m || m.full === undefined) return prev;
+        const words = m.full.split(' ');
+        const cur = m.text.length === 0 ? 0 : m.text.split(' ').length;
+        if (cur >= words.length) return prev;
+        copy[i] = { ...m, text: words.slice(0, cur + 1).join(' ') };
+        return copy;
+      });
+    }, 90 + Math.random() * 60);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   // Auto-scroll to bot output bottom
@@ -173,12 +191,16 @@ Please type your inquiries below!`,
 
       const data = await response.json();
       const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      
+      const replyText = data.reply || strings.welcome;
+
+      // Push the reply with an empty visible body + `full` target so it types out
+      // gradually (like a real person composing a reply), not dumped instantly.
       setMessages(prev => [
         ...prev,
         {
           role: 'model',
-          text: data.reply || strings.welcome,
+          text: '',
+          full: replyText,
           timestamp: replyTime,
         },
       ]);
@@ -209,67 +231,121 @@ Please type your inquiries below!`,
         },
       ];
       setMessages(initial);
-      sessionStorage.setItem('rang_chat_history', JSON.stringify(initial));
+      try { sessionStorage.removeItem('rang_chat_history'); } catch (_) {}
     }
   };
 
-  // Inline custom renderer to support **bold text**, bullet points, and ordered lists
+  // Split a markdown table row "| a | b |" into ["a","b"].
+  const splitRow = (l: string) =>
+    l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+
+  // Inline markdown renderer: bold, headings, bullets, ordered lists AND tables.
   const renderMessageText = (text: string) => {
     if (!text) return null;
-    const blocks = text.split('\n');
-    return (
-      <div className="space-y-1.5 text-sm leading-relaxed font-light">
-        {blocks.map((block, bIdx) => {
-          const trimmed = block.trim();
-          if (!trimmed) return <div key={bIdx} className="h-1.5" />;
+    const lines = text.split('\n');
+    const out: React.ReactNode[] = [];
+    const isRow = (l: string) => l.includes('|') && l.trim().startsWith('|');
+    const isSep = (l: string) => /-/.test(l) && /^[\s|:-]+$/.test(l.trim());
+    let i = 0;
 
-          // Bullets formatting
-          if (trimmed.startsWith('*') || trimmed.startsWith('-') || trimmed.startsWith('•')) {
-            const content = trimmed.substring(1).trim();
-            return (
-              <div key={bIdx} className="flex items-start gap-1.5 pl-1.5">
-                <span className="text-orange-500 mt-2 h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
-                <span>{parseBoldContent(content)}</span>
-              </div>
-            );
-          }
+    while (i < lines.length) {
+      const raw = lines[i];
+      const trimmed = raw.trim();
 
-          // Numbered lists formatting
-          const numberedMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
-          if (numberedMatch) {
-            const num = numberedMatch[1];
-            const content = numberedMatch[2];
-            return (
-              <div key={bIdx} className="flex items-start gap-1.5 pl-1.5">
-                <span className="text-orange-500 font-bold shrink-0 text-xs mt-0.5">{num}.</span>
-                <span>{parseBoldContent(content)}</span>
-              </div>
-            );
-          }
+      // Markdown table: header row + separator row (---) + body rows.
+      if (isRow(raw) && i + 1 < lines.length && isSep(lines[i + 1])) {
+        const header = splitRow(raw);
+        const rows: string[][] = [];
+        let j = i + 2;
+        while (j < lines.length && isRow(lines[j])) { rows.push(splitRow(lines[j])); j++; }
+        out.push(
+          <div key={i} className="overflow-x-auto my-1 rounded-lg border border-zinc-800">
+            <table className="w-full text-[11px] border-collapse">
+              <thead>
+                <tr>
+                  {header.map((h, k) => (
+                    <th key={k} className="border-b border-zinc-700 bg-zinc-800/60 px-2 py-1 text-left font-semibold text-orange-300 whitespace-nowrap">{parseBoldContent(h)}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, ri) => (
+                  <tr key={ri} className="odd:bg-zinc-900/30">
+                    {r.map((c, ci) => (
+                      <td key={ci} className="border-t border-zinc-800/70 px-2 py-1 text-zinc-300 align-top">{parseBoldContent(c)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        i = j;
+        continue;
+      }
 
-          // Paragraph fallback
-          return <p key={bIdx}>{parseBoldContent(trimmed)}</p>;
-        })}
-      </div>
-    );
+      if (!trimmed) { out.push(<div key={i} className="h-1.5" />); i++; continue; }
+
+      // Headings (#, ##, ###…) → styled heading (strip the # marks).
+      const head = trimmed.match(/^(#{1,6})\s+(.*)$/);
+      if (head) {
+        out.push(<div key={i} className="font-bold text-zinc-100 text-[12.5px] mt-1">{parseBoldContent(head[2])}</div>);
+        i++; continue;
+      }
+
+      // Bullets ( - , * , • ) — require a space so **bold** at line start isn't caught.
+      const bullet = trimmed.match(/^([-*•])\s+(.*)$/);
+      if (bullet) {
+        out.push(
+          <div key={i} className="flex items-start gap-1.5 pl-1.5">
+            <span className="text-orange-500 mt-2 h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
+            <span>{parseBoldContent(bullet[2])}</span>
+          </div>
+        );
+        i++; continue;
+      }
+
+      // Numbered list.
+      const num = trimmed.match(/^(\d+)\.\s+(.*)/);
+      if (num) {
+        out.push(
+          <div key={i} className="flex items-start gap-1.5 pl-1.5">
+            <span className="text-orange-500 font-bold shrink-0 text-xs mt-0.5">{num[1]}.</span>
+            <span>{parseBoldContent(num[2])}</span>
+          </div>
+        );
+        i++; continue;
+      }
+
+      // Paragraph.
+      out.push(<p key={i}>{parseBoldContent(trimmed)}</p>);
+      i++;
+    }
+
+    return <div className="space-y-1.5 text-xs leading-relaxed font-light">{out}</div>;
   };
 
   const parseBoldContent = (text: string) => {
-    const boldRegex = /\*\*(.*?)\*\*/g;
-    const parts = [];
+    // Handles **bold** and *italic* so no raw * asterisks leak into the chat.
+    const parts: React.ReactNode[] = [];
+    const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
     let lastIndex = 0;
     let match;
 
-    while ((match = boldRegex.exec(text)) !== null) {
+    while ((match = regex.exec(text)) !== null) {
       if (match.index > lastIndex) {
         parts.push(text.substring(lastIndex, match.index));
       }
-      parts.push(
-        <strong key={match.index} className="font-semibold text-orange-400">
-          {match[1]}
-        </strong>
-      );
-      lastIndex = boldRegex.lastIndex;
+      if (match[1] !== undefined) {
+        parts.push(
+          <strong key={match.index} className="font-semibold text-orange-400">{match[1]}</strong>
+        );
+      } else {
+        parts.push(
+          <em key={match.index} className="italic text-zinc-200">{match[2]}</em>
+        );
+      }
+      lastIndex = regex.lastIndex;
     }
 
     if (lastIndex < text.length) {
@@ -281,19 +357,29 @@ Please type your inquiries below!`,
 
   // Chips suggestions content
   const suggestions = [
-    { text: strings.askProducts, prompt: language === 'id' ? 'Tolong jelaskan produk arang Nusantara Charcoal dan spesifikasinya.' : language === 'ar' ? 'أرجو شرح أنواع الفحم ومواصفاتها بالتفصيل.' : 'Please explain Nusantara Charcoal products and their detailed specifications.' },
-    { text: strings.howToOrder, prompt: language === 'id' ? 'Bagaimana cara pemesanan arang di Nusantara Charcoal?' : language === 'ar' ? 'كيف يمكنني تقديم طلب شراء؟' : 'How can I place an order for your charcoal?' },
+    { text: strings.askProducts, prompt: language === 'id' ? 'Tolong jelaskan produk arang Bricket Charcoal Indonesia dan spesifikasinya.' : language === 'ar' ? 'أرجو شرح أنواع الفحم ومواصفاتها بالتفصيل.' : 'Please explain Bricket Charcoal Indonesia products and their detailed specifications.' },
+    { text: strings.howToOrder, prompt: language === 'id' ? 'Bagaimana cara pemesanan arang di Bricket Charcoal Indonesia?' : language === 'ar' ? 'كيف يمكنني تقديم طلب شراء؟' : 'How can I place an order for your charcoal?' },
     { text: strings.orderBbq, prompt: language === 'id' ? 'Halo, saya ingin memesan Arang BBQ Premium.' : language === 'ar' ? 'مرحباً، أود تقديم طلب لشراء فحم الشواء الممتاز.' : 'Hello, I want to place an order for Premium BBQ Charcoal.' },
     { text: strings.orderShisha, prompt: language === 'id' ? 'Pesan Arang Shisha Premium.' : language === 'ar' ? 'أود طلب فحم الشيشة الفاخر من فضلكم.' : 'Order Premium Shisha Charcoal.' },
   ];
 
   return (
-    <div 
-      className="fixed bottom-6 z-55 flex flex-col items-end"
-      style={{ 
-        right: isRtl ? 'auto' : '1.5rem', 
-        left: isRtl ? '1.5rem' : 'auto', 
-        direction: isRtl ? 'rtl' : 'ltr' 
+    <>
+      {/* Blurred backdrop behind the open chat panel (click to close). */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-md sm:backdrop-blur-lg"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+    <div
+      className="fixed bottom-6 z-[60] flex flex-col items-end"
+      style={{
+        right: isRtl ? 'auto' : '1.5rem',
+        left: isRtl ? '1.5rem' : 'auto',
+        direction: isRtl ? 'rtl' : 'ltr',
+        fontFamily: "'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
       }}
       id="ai-customer-chat"
     >
@@ -330,7 +416,7 @@ Please type your inquiries below!`,
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.94 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className={`w-[calc(100vw-2rem)] sm:w-[410px] h-[calc(100dvh-4rem)] sm:h-[580px] bg-[#0c0d10] border border-zinc-800 sm:rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden mb-4`}
+            className={`w-[calc(100vw-2rem)] sm:w-[750px] max-w-[calc(100vw-2rem)] h-[calc(100dvh-4rem)] sm:h-[620px] bg-[#0c0d10] border border-zinc-800 sm:rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden mb-4`}
           >
             {/* Header */}
             <div className="p-4 bg-[#111317] border-b border-zinc-800 flex items-center justify-between">
@@ -422,7 +508,7 @@ Please type your inquiries below!`,
                   </div>
                   <div className="bg-zinc-900 border border-zinc-900 text-zinc-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
                     <Loader2 className="h-4 w-4 text-orange-500 animate-spin" />
-                    <span className="text-xs text-zinc-500 font-light">NusaBot is thinking...</span>
+                    <span className="text-xs text-zinc-500 font-light">PremiumCharcoal is thinking...</span>
                   </div>
                 </div>
               )}
@@ -515,5 +601,6 @@ Please type your inquiries below!`,
         </AnimatePresence>
       </motion.button>
     </div>
+    </>
   );
 }

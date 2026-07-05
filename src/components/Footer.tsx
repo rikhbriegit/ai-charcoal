@@ -39,7 +39,7 @@ export function Footer({ onOpenAdmin }: FooterProps) {
         </div>
         
         <div className="mt-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} Nusantara Charcoal. {t('footer_rights')}.</p>
+          <p>&copy; {new Date().getFullYear()} Bricket Charcoal Indonesia. {t('footer_rights')}.</p>
           <p className="mt-2 md:mt-0 font-light">{t('footer_tagline')}</p>
         </div>
       </div>

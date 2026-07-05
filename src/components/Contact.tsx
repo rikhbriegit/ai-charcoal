@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import React, { useState } from 'react';
 import { useSeoAds } from '../context/SeoAdsContext';
@@ -53,33 +53,27 @@ export function Contact() {
                   <MapPin className="h-6 w-6" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-base font-bold text-white font-display">{t('contact_hq')}</h3>
+                  <h3 className="text-base font-bold text-white font-display">Head Office</h3>
                   <p className="mt-1 text-sm text-zinc-400 leading-relaxed font-light">
-                    Jl. Industri No. 45<br/>
-                    Surabaya, Jawa Timur 60221<br/>
-                    Indonesia
+                    <span className="text-zinc-200 font-semibold">PT. BRIKET CHARCOAL INDONESIA</span><br/>
+                    Jl. Raya Kronjo No. 18, Sukamulya,<br/>
+                    Balaraja, Tangerang, Indonesia, 15610
                   </p>
                 </div>
               </div>
-              
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-[#0c0d10] p-4 rounded-xl text-orange-500 border border-zinc-800">
-                  <Phone className="h-6 w-6" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-base font-bold text-white font-display">{t('contact_phone_whatsapp')}</h3>
-                  <p className="mt-1 text-sm text-zinc-400 font-light">+62 811 0000 0000</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-[#0c0d10] p-4 rounded-xl text-orange-500 border border-zinc-800">
-                  <Mail className="h-6 w-6" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-base font-bold text-white font-display">{t('contact_email')}</h3>
-                  <p className="mt-1 text-sm text-zinc-400 font-light">export@nusantaracharcoal.com</p>
-                </div>
+
+              {/* Professional embedded location map */}
+              <div className="overflow-hidden rounded-2xl border border-zinc-800 shadow-lg">
+                <iframe
+                  title="Lokasi PT. Briket Charcoal Indonesia"
+                  src="https://maps.google.com/maps?q=-6.2154,106.4198&z=3&output=embed"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
               </div>
             </div>
           </motion.div>

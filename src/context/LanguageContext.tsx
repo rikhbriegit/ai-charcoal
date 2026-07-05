@@ -56,7 +56,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // About
     about_sub: 'SIAPA KAMI & KOMITMEN KAMI',
     about_title: 'Penyedia Energi Berkelanjutan dengan Integritas Tinggi',
-    about_desc_1: 'Didirikan dengan visi mengangkat keunggulan agrikultur nusantara ke pangsa ekspor dunia, Nusantara Charcoal memproduksi dan memasok arang kelapa serta kayu bermutu tinggi yang ramah lingkungan. Kami meminimalkan jejak karbon dengan mengoptimalkan produk sampingan agraris agar tidak terbuang sia-sia.',
+    about_desc_1: 'Didirikan dengan visi mengangkat keunggulan agrikultur nusantara ke pangsa ekspor dunia, Bricket Charcoal Indonesia memproduksi dan memasok arang kelapa serta kayu bermutu tinggi yang ramah lingkungan. Kami meminimalkan jejak karbon dengan mengoptimalkan produk sampingan agraris agar tidak terbuang sia-sia.',
     about_desc_2: 'Kami bermitra erat dengan ratusan kelompok tani lokal guna menjamin ketersediaan material mentah, sekaligus menggerakkan perekonomian pedesaan secara jujur (fair-trade) dan bermartabat.',
     about_stat_1_val: '0%',
     about_stat_1_title: 'Bahan Kimia',
@@ -99,7 +99,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // Lab Analysis
     lab_sub: 'STANDAR LABORATORIUM INTERNASIONAL',
     lab_title: 'Sertifikasi & Analisis Kimiawi Produk',
-    lab_desc: 'Nusantara Charcoal berkomitmen penuh pada transparansi kualitas ekspor. Setiap batch produksi melewati pengujian ketat laboratorium pihak ketiga internasional.',
+    lab_desc: 'Bricket Charcoal Indonesia berkomitmen penuh pada transparansi kualitas ekspor. Setiap batch produksi melewati pengujian ketat laboratorium pihak ketiga internasional.',
     lab_fixed_carbon: 'Karbon Aktif (Fixed Carbon)',
     lab_ash_content: 'Kadar Abu (Ash Content)',
     lab_moisture: 'Kadar Air (Moisture Content)',
@@ -195,7 +195,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // About
     about_sub: 'WHO WE ARE & OUR COMMITMENT',
     about_title: 'Sustainable Energy Provider with Solid Integrity',
-    about_desc_1: 'Founded with a vision to elevate natural Indonesian agriculture to the global export market, Nusantara Charcoal produces and supplies high-grade coconut shell & wood charcoal. We minimize our carbon footprint by turning agricultural side-products into sustainable energy.',
+    about_desc_1: 'Founded with a vision to elevate natural Indonesian agriculture to the global export market, Bricket Charcoal Indonesia produces and supplies high-grade coconut shell & wood charcoal. We minimize our carbon footprint by turning agricultural side-products into sustainable energy.',
     about_desc_2: 'We work closely with hundreds of local farmer cooperatives to secure reliable raw materials while supporting rural economies through fair-trade practices.',
     about_stat_1_val: '0%',
     about_stat_1_title: 'Chemical Sourcing',
@@ -238,7 +238,7 @@ const translations: Record<LanguageType, Record<string, string>> = {
     // Lab Analysis
     lab_sub: 'INTERNATIONAL LABORATORY STANDARDS',
     lab_title: 'Certification & Chemical Analysis of Products',
-    lab_desc: 'Nusantara Charcoal is fully committed to absolute transparency. Every production batch passes stringent testing by international third-party laboratories.',
+    lab_desc: 'Bricket Charcoal Indonesia is fully committed to absolute transparency. Every production batch passes stringent testing by international third-party laboratories.',
     lab_fixed_carbon: 'Fixed Carbon',
     lab_ash_content: 'Ash Content',
     lab_moisture: 'Moisture Content',
@@ -433,7 +433,11 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageType>(() => {
-    // Default to 'id' or read from localStorage
+    // Priority: ?lang= URL param (for hreflang / SEO deep links) → localStorage → 'id'.
+    try {
+      const p = new URLSearchParams(window.location.search).get('lang');
+      if (p === 'id' || p === 'en' || p === 'ar') return p;
+    } catch (_) {}
     const saved = localStorage.getItem('arang_lang');
     return (saved === 'id' || saved === 'en' || saved === 'ar') ? saved : 'id';
   });

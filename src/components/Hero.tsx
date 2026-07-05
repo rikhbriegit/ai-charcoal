@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Play, Leaf, ShieldAlert, Flame, Sparkles, X } from 'lucide-react';
-import premiumCharcoalBg from '../assets/images/premium_charcoal_bg_1781161967608.png';
+// Hero background = the main product (Premium Block Briquette).
+// To revert to the original charcoal bg: swap back to premium_charcoal_bg_1781161967608.png (copied to /backups).
+import premiumCharcoalBg from '../assets/images/arang_briket_premium_1781099259500.webp';
 import { useLanguage } from '../context/LanguageContext';
-import { CharcoalCanvas3D } from './CharcoalCanvas3D';
+// Lazy — pulls in three.js only when the 3D simulator modal is opened.
+const CharcoalCanvas3D = lazy(() => import('./CharcoalCanvas3D').then((m) => ({ default: m.CharcoalCanvas3D })));
 
 export function Hero() {
   const { t, isRtl, language } = useLanguage();
@@ -26,7 +29,7 @@ export function Hero() {
     'Simulasi Arang 3D Interaktif';
 
   return (
-    <div id="home" className="relative bg-[#030303] min-h-screen flex items-center lg:items-end pt-28 pb-10 lg:pb-14 overflow-hidden">
+    <div id="home" className="relative bg-[#030303] min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
       
       {/* Full-Screen Immersive Parallax Charcoal Background */}
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -40,12 +43,17 @@ export function Hero() {
           <img
             src={premiumCharcoalBg}
             alt="Arang Premium Full Screen Background"
-            className="w-full h-full object-cover object-right lg:object-center"
+            className="w-full h-full object-cover object-center"
             referrerPolicy="no-referrer"
           />
         </div>
+        {/* Warm ember glow so the product still reads as lit/burning. */}
+        <div
+          className="absolute inset-0 z-[6] pointer-events-none"
+          style={{ background: 'radial-gradient(120% 85% at 50% 100%, rgba(234,88,12,0.42), rgba(150,35,0,0.14) 40%, transparent 66%)' }}
+        />
         {/* Advanced Multi-Layer Gradient Overlays for Luxury look and pristine readability */}
-        <div className={`absolute inset-y-0 ${isRtl ? 'right-0 bg-gradient-to-l lg:left-auto' : 'left-0 bg-gradient-to-r lg:right-auto'} w-full lg:w-[65%] from-[#030303] via-[#030303]/95 to-transparent z-10 hidden md:block`} />
+        <div className={`absolute inset-y-0 ${isRtl ? 'right-0 bg-gradient-to-l lg:left-auto' : 'left-0 bg-gradient-to-r lg:right-auto'} w-full lg:w-[48%] from-[#030303] via-[#030303]/80 to-transparent z-10 hidden md:block`} />
         <div className="absolute inset-0 bg-gradient-to-b from-[#030303] via-transparent to-[#030303] z-10" />
         <div className="absolute inset-0 bg-black/55 md:hidden block z-10" /> {/* Extra dark overlay on mobile for impeccable readability */}
         
@@ -96,7 +104,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-orange-500 font-sans font-extrabold text-[11px] sm:text-xs tracking-[0.3em] uppercase mb-6"
+              className="text-orange-500 font-sans font-extrabold text-[9px] sm:text-[10px] tracking-[0.3em] uppercase mb-6"
             >
               {t('hero_sub')}
             </motion.p>
@@ -107,10 +115,10 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="flex flex-col gap-0.5"
             >
-              <h1 className="text-6xl sm:text-[80px] lg:text-[100px] font-display font-[900] tracking-tighter text-white leading-[0.85]">
+              <h1 className="text-5xl sm:text-[64px] lg:text-[80px] font-display font-[900] tracking-tighter text-white leading-[0.85]">
                 {t('hero_title_1')}
               </h1>
-              <h1 className="text-6xl sm:text-[80px] lg:text-[100px] font-display font-[900] tracking-tighter text-orange-500 leading-[0.85] bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+              <h1 className="text-5xl sm:text-[64px] lg:text-[80px] font-display font-[900] tracking-tighter text-orange-500 leading-[0.85] bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 {t('hero_title_2')}
               </h1>
             </motion.div>
@@ -119,7 +127,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="mt-6 text-zinc-300 text-base sm:text-lg max-w-xl leading-relaxed font-light"
+              className="mt-6 text-zinc-300 text-[13px] sm:text-[14px] max-w-xl leading-relaxed font-light"
             >
               {t('hero_desc')}
             </motion.p>
@@ -133,20 +141,20 @@ export function Hero() {
             >
               <a
                 href="#products"
-                className="inline-flex items-center justify-center px-6 py-3.5 border border-transparent text-sm font-bold rounded-xl text-white bg-orange-600 hover:bg-orange-500 transition-all duration-300 shadow-[0_0_30px_rgba(234,88,12,0.35)] hover:shadow-[0_0_40px_rgba(234,88,12,0.55)]"
+                className="inline-flex items-center justify-center px-6 py-3.5 border border-transparent text-xs font-bold rounded-xl text-white bg-orange-600 hover:bg-orange-500 transition-all duration-300 shadow-[0_0_30px_rgba(234,88,12,0.35)] hover:shadow-[0_0_40px_rgba(234,88,12,0.55)]"
               >
                 {t('hero_btn_products')} <ArrowRight className={`ml-2 h-4.5 w-4.5 ${isRtl ? 'rotate-180' : ''}`} />
               </a>
 
               <button
                 onClick={() => setIs3DOpen(true)}
-                className="inline-flex items-center justify-center px-6 py-3.5 border border-orange-500/30 text-sm font-bold rounded-xl text-orange-400 bg-orange-500/10 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 shadow-[0_0_20px_rgba(234,88,12,0.1)] hover:shadow-[0_0_30px_rgba(234,88,12,0.25)] cursor-pointer"
+                className="inline-flex items-center justify-center px-6 py-3.5 border border-orange-500/30 text-xs font-bold rounded-xl text-orange-400 bg-orange-500/10 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 shadow-[0_0_20px_rgba(234,88,12,0.1)] hover:shadow-[0_0_30px_rgba(234,88,12,0.25)] cursor-pointer"
               >
                 <Sparkles className="mr-2.5 h-4 w-4 text-orange-400 group-hover:text-white animate-pulse" /> {simulatorLabel}
               </button>
               
               <button
-                className="inline-flex items-center justify-center px-6 py-3.5 border border-zinc-800 text-sm font-bold rounded-xl text-zinc-300 bg-zinc-950/40 backdrop-blur-md hover:bg-zinc-900 hover:text-white hover:border-zinc-700 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3.5 border border-zinc-800 text-xs font-bold rounded-xl text-zinc-300 bg-zinc-950/40 backdrop-blur-md hover:bg-zinc-900 hover:text-white hover:border-zinc-700 transition-all duration-300"
               >
                 <Play className="mr-2.5 h-4 w-4 fill-current text-white" /> {t('hero_btn_video')}
               </button>
@@ -189,8 +197,8 @@ export function Hero() {
                   <Leaf className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white leading-none">{t('hero_badge_env')}</p>
-                  <p className="text-xs text-zinc-500 mt-1 font-light">{t('hero_badge_env_sub')}</p>
+                  <p className="text-xs font-bold text-white leading-none">{t('hero_badge_env')}</p>
+                  <p className="text-[10px] text-zinc-500 mt-1 font-light">{t('hero_badge_env_sub')}</p>
                 </div>
               </div>
 
@@ -199,8 +207,8 @@ export function Hero() {
                   <Flame className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white leading-none">{t('hero_badge_burn')}</p>
-                  <p className="text-xs text-zinc-500 mt-1 font-light">{t('hero_badge_burn_sub')}</p>
+                  <p className="text-xs font-bold text-white leading-none">{t('hero_badge_burn')}</p>
+                  <p className="text-[10px] text-zinc-500 mt-1 font-light">{t('hero_badge_burn_sub')}</p>
                 </div>
               </div>
 
@@ -209,8 +217,8 @@ export function Hero() {
                   <ShieldAlert className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white leading-none">{t('hero_badge_guar')}</p>
-                  <p className="text-xs text-zinc-500 mt-1 font-light">{t('hero_badge_guar_sub')}</p>
+                  <p className="text-xs font-bold text-white leading-none">{t('hero_badge_guar')}</p>
+                  <p className="text-[10px] text-zinc-500 mt-1 font-light">{t('hero_badge_guar_sub')}</p>
                 </div>
               </div>
             </motion.div>
@@ -245,7 +253,9 @@ export function Hero() {
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
               className="relative w-full max-w-lg z-10"
             >
-              <CharcoalCanvas3D onClose={() => setIs3DOpen(false)} />
+              <Suspense fallback={<div className="grid h-64 w-full place-items-center text-xs text-zinc-500">Memuat 3D…</div>}>
+                <CharcoalCanvas3D onClose={() => setIs3DOpen(false)} />
+              </Suspense>
             </motion.div>
           </div>
         )}

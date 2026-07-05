@@ -47,40 +47,37 @@ interface SeoAdsContextProps {
 const defaultJsonLd = `{
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Nusantara Charcoal",
-  "url": "https://nusantaracharcoal.com",
-  "logo": "https://nusantaracharcoal.com/assets/logo.png",
-  "sameAs": [
-    "https://facebook.com/nusantaracharcoal",
-    "https://instagram.com/nusantaracharcoal"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+6281100000000",
-    "contactType": "sales",
-    "areaServed": "Worldwide",
-    "availableLanguage": ["Indonesian", "English", "Arabic"]
-  }
+  "name": "PT. Briket Charcoal Indonesia",
+  "url": "https://bricketcharcoal.com",
+  "logo": "https://bricketcharcoal.com/favicon.svg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Jl. Raya Kronjo No. 18, Sukamulya",
+    "addressLocality": "Balaraja, Tangerang",
+    "postalCode": "15610",
+    "addressCountry": "ID"
+  },
+  "areaServed": ["Middle East", "Worldwide"]
 }`;
 
 const defaultSettings: SeoAdsConfig = {
   seo: {
     id: {
-      title: 'Nusantara Charcoal - Produsen Arang Kelapa & Kayu Ekspor Terbaik',
+      title: 'Bricket Charcoal Indonesia - Produsen Arang Kelapa & Kayu Ekspor Terbaik',
       description: 'Eksportir arang premium dari Indonesia. Memproduksi briket shisha batok kelapa, arang briket BBQ berkualitas tinggi, awet, panas stabil, bersertifikasi Sucofindo & SGS.',
-      keywords: 'arang kelapa, briket shisha, arang bbq, ekspor arang indonesia, sawdust hexagonal, briket kelapa premium, nusantara charcoal'
+      keywords: 'arang kelapa, briket shisha, arang bbq, ekspor arang indonesia, sawdust hexagonal, briket kelapa premium, bricket charcoal'
     },
     en: {
-      title: 'Nusantara Charcoal - Top Coconut Shell & Wood Charcoal Exporter',
+      title: 'Bricket Charcoal Indonesia - Top Coconut Shell & Wood Charcoal Exporter',
       description: 'Premium Indonesian charcoal exporter. Supplying premium coconut shell shisha briquettes and high-grade BBQ charcoal. Long-lasting, high heat, certified by SGS & Sucofindo.',
-      keywords: 'coconut charcoal, shisha briquette, bbq charcoal, charcoal export indonesia, hexagonal charcoal, nusantara charcoal'
+      keywords: 'coconut charcoal, shisha briquette, bbq charcoal, charcoal export indonesia, hexagonal charcoal, bricket charcoal'
     },
     ar: {
-      title: 'فحم نوسانتارا - مصنع ومصدر فحم جوز الهند الطبيعي للشيشة والشواء',
+      title: 'فحم بريكيت - مصنع ومصدر فحم جوز الهند الطبيعي للشيشة والشواء',
       description: 'مصدر الفحم الإندونيسي الفاخر ومكعبات فحم شيشة جوز الهند الطبيعي وفحم الشواء عالي الجودة. حرارة ثابتة تدوم طويلا ومعتمد دولياً وسيرتيفايد.',
-      keywords: 'فحم جوز الهند، فحم شيشة، فحم شواء، تصدير الفحم إندونيسيا، فحم سداسي، فحم نوسانتارا'
+      keywords: 'فحم جوز الهند، فحم شيشة، فحم شواء، تصدير الفحم إندونيسيا، فحم سداسي، فحم بريكيت'
     },
-    canonicalUrl: 'https://nusantaracharcoal.com',
+    canonicalUrl: 'https://bricketcharcoal.com',
     robots: 'index, follow',
     jsonLdSchema: defaultJsonLd
   },
@@ -215,12 +212,12 @@ export const SeoAdsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // 6. JSON-LD Schema Script
     let schemaScript = document.getElementById('seo-jsonld-schema');
     if (schemaScript) {
-      schemaScript.innerHTML = config.seo.jsonLdSchema;
+      schemaScript.textContent = config.seo.jsonLdSchema;
     } else {
       schemaScript = document.createElement('script');
       schemaScript.setAttribute('id', 'seo-jsonld-schema');
       schemaScript.setAttribute('type', 'application/ld+json');
-      schemaScript.innerHTML = config.seo.jsonLdSchema;
+      schemaScript.textContent = config.seo.jsonLdSchema;
       document.head.appendChild(schemaScript);
     }
 
@@ -245,6 +242,11 @@ export const SeoAdsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const { conversionId, remarketingEnabled } = config.googleAds;
     if (!conversionId) return;
+    // Sanitize before injecting into <script> — Google tag IDs are alphanumeric
+    // + dash/underscore only; this blocks script injection via a crafted ID.
+    const safeId = String(conversionId).replace(/[^A-Za-z0-9_-]/g, '');
+    if (!safeId) return;
+    const safeRemarketing = !!remarketingEnabled;
 
     // Remove old scripts
     const oldScr = document.getElementById('gtag-ads-script');
@@ -256,19 +258,19 @@ export const SeoAdsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const script = document.createElement('script');
     script.id = 'gtag-ads-script';
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${conversionId}`;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${safeId}`;
     document.head.appendChild(script);
 
     // Inject custom config node inside document head
     const configNode = document.createElement('script');
     configNode.id = 'gtag-ads-config-node';
-    configNode.innerHTML = `
+    configNode.textContent = `
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '${conversionId}', {
+      gtag('config', '${safeId}', {
         'send_page_view': true,
-        'remarketing_only': ${remarketingEnabled}
+        'remarketing_only': ${safeRemarketing}
       });
     `;
     document.head.appendChild(configNode);

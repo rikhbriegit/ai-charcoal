@@ -37,20 +37,20 @@ export function Navbar({ onOpenAdmin }: NavbarProps) {
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'py-0.5 shadow-md shadow-zinc-200/50 bg-white/95 border-b border-zinc-200/80 backdrop-blur-xl' : 'py-0 bg-[#030303]/80 border-b border-white/[0.04] backdrop-blur-xl'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? 'h-11' : 'h-22'}`}>
+        <div className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? 'h-11' : 'h-13'}`}>
           
           {/* Logo Brand exactly like in the picture */}
           <div className={`flex-shrink-0 flex items-center transition-all duration-300 ${isScrolled ? 'gap-1.5' : 'gap-3'} group cursor-pointer`} onClick={() => { setActiveLink('nav_home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
             <div className="relative">
               <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-md group-hover:scale-125 transition-transform duration-500" />
-              <Flame className={`text-orange-500 relative z-10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 animate-pulse ${isScrolled ? 'h-4.5 w-4.5' : 'h-9 w-9'}`} />
+              <Flame className={`text-orange-500 relative z-10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 animate-pulse ${isScrolled ? 'h-4.5 w-4.5' : 'h-6.5 w-6.5'}`} />
             </div>
             <div className="flex flex-col select-none">
-              <span className={`font-display font-black tracking-wider leading-none transition-all duration-300 ${isScrolled ? 'text-zinc-900 text-[14px]' : 'text-white text-[22px]'}`}>
-                {t('hero_title_1')}
+              <span className={`font-display font-black tracking-wider leading-none transition-all duration-300 ${isScrolled ? 'text-zinc-900 text-[14px]' : 'text-white text-[18px]'}`}>
+                PREMIUM
               </span>
               <span className={`font-sans font-bold text-orange-500 tracking-[0.3em] leading-none uppercase mt-0.5 transition-all duration-300 ${isScrolled ? 'text-[6.5px] mt-0.25' : 'text-[10px]'}`}>
-                {t('brand_sub')}
+                CHARCOAL
               </span>
             </div>
           </div>
@@ -66,7 +66,7 @@ export function Navbar({ onOpenAdmin }: NavbarProps) {
                   onMouseEnter={() => setHoveredLink(link.key)}
                   onMouseLeave={() => setHoveredLink(null)}
                   className={`relative flex items-center gap-1 transition-all duration-300 ${
-                    isScrolled ? 'px-2 py-1 text-[12.5px]' : 'px-4 py-2.5 text-[15px]'
+                    isScrolled ? 'px-2 py-1 text-[12.5px]' : 'px-3 py-1.5 text-[13px]'
                   } font-display font-medium tracking-wide transition-colors duration-300 ${
                     activeLink === link.key 
                       ? (isScrolled ? 'text-orange-600 font-semibold' : 'text-orange-500 font-semibold') 
@@ -98,7 +98,7 @@ export function Navbar({ onOpenAdmin }: NavbarProps) {
           </div>
 
           {/* Right Controls: Language Toggle, Search, Cart, Pesan button */}
-          <div className={`hidden md:flex items-center transition-all duration-300 ${isScrolled ? 'gap-2' : 'gap-5'}`}>
+          <div className={`hidden md:flex items-center transition-all duration-300 ${isScrolled ? 'gap-1.5' : 'gap-2.5'}`}>
             
             {/* Premium Language Segmented Switcher */}
             <div className={`flex items-center rounded-full select-none transition-all duration-300 ${isScrolled ? 'bg-zinc-100 border border-zinc-200 p-0.25 font-normal' : 'bg-zinc-950/80 border border-zinc-800/80 p-0.75'} ${isRtl ? 'flex-row-reverse' : ''}`}>

@@ -23,6 +23,27 @@ function AppContent() {
   const [currentView, setCurrentView] = useState<'landing' | 'admin'>('landing');
 
   const navigateTo = (view: 'landing' | 'admin') => {
+    // Gate the admin panel behind a password. It only writes to the visitor's own
+    // localStorage (no server privilege), so a client-side gate is proportionate.
+    if (view === 'admin') {
+      const expected = (import.meta as any).env?.VITE_ADMIN_PASSWORD;
+      // No password configured at build → admin disabled entirely. We NEVER ship a
+      // usable hard-coded default (it would be readable in the JS bundle).
+      if (!expected) {
+        window.alert('Panel admin dinonaktifkan (VITE_ADMIN_PASSWORD belum di-set saat build).');
+        return;
+      }
+      const okUntil = Number(sessionStorage.getItem('admin_ok_until') || 0);
+      if (Date.now() > okUntil) {
+        const entered = window.prompt('Masukkan password admin:');
+        if (entered !== expected) {
+          if (entered !== null) window.alert('Password salah.');
+          return;
+        }
+        // Session valid for 30 minutes, then re-prompt.
+        sessionStorage.setItem('admin_ok_until', String(Date.now() + 30 * 60 * 1000));
+      }
+    }
     setCurrentView(view);
     window.scrollTo({ top: 0 });
   };

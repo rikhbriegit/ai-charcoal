@@ -317,7 +317,7 @@ export function SeoAdsAdmin({ onClose }: SeoAdsAdminProps) {
                       <div>
                         <h3 className="font-display font-medium text-white text-base">Dashboard Monitoring SEO & Google Ads</h3>
                         <p className="text-zinc-400 text-xs font-light mt-1 max-w-2xl leading-relaxed">
-                          Nusantara Charcoal SEO-Ads core terhubung langsung dengan Google Tag Manager dan merekam trigger interaksi secara real-time. Anda dapat melihat aktivitas naskah pelacakan, status indeksasi halaman, dan mengukur performa Google Ads dari panel ini.
+                          Bricket Charcoal Indonesia SEO-Ads core terhubung langsung dengan Google Tag Manager dan merekam trigger interaksi secara real-time. Anda dapat melihat aktivitas naskah pelacakan, status indeksasi halaman, dan mengukur performa Google Ads dari panel ini.
                         </p>
                       </div>
                     </div>
@@ -374,7 +374,7 @@ export function SeoAdsAdmin({ onClose }: SeoAdsAdminProps) {
                           <Sliders className="h-5 w-5" />
                         </div>
                         <p className="text-xs font-bold text-white uppercase">1. Simpan Sesi</p>
-                        <p className="text-[10px] text-zinc-500 mt-1 font-light">Setelan ditulis ke enkripsi LocalStorage browser.</p>
+                        <p className="text-[10px] text-zinc-500 mt-1 font-light">Setelan disimpan di LocalStorage browser ini (tidak dikirim ke server).</p>
                       </div>
 
                       <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-900 text-center relative">
@@ -499,7 +499,7 @@ export function SeoAdsAdmin({ onClose }: SeoAdsAdminProps) {
                           value={canonical}
                           onChange={(e) => setCanonical(e.target.value)}
                           className="block w-full bg-zinc-950 border border-zinc-850 rounded-xl py-3 px-4 text-zinc-300 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all font-mono"
-                          placeholder="https://nusantaracharcoal.com"
+                          placeholder="https://bricketcharcoal.com"
                         />
                       </div>
 
@@ -528,14 +528,14 @@ export function SeoAdsAdmin({ onClose }: SeoAdsAdminProps) {
                       <div className="flex items-center gap-2 mb-1.5">
                         <div className="h-6 w-6 rounded-full bg-zinc-100 flex items-center justify-center text-[10px] font-bold text-zinc-600">N</div>
                         <div className="text-left leading-none">
-                          <p className="text-xs font-semibold text-zinc-800">Nusantara Charcoal</p>
+                          <p className="text-xs font-semibold text-zinc-800">Bricket Charcoal Indonesia</p>
                           <span className="text-[9px] text-zinc-400 font-mono leading-none">{canonical}</span>
                         </div>
                       </div>
                       
                       {/* Title preview */}
                       <p className="text-[19px] leading-tight text-[#1a0dab] hover:underline cursor-pointer font-medium mb-1 truncate text-left">
-                        {seoTitle || 'Nusantara Charcoal Premium Supplier'}
+                        {seoTitle || 'Bricket Charcoal Indonesia Premium Supplier'}
                       </p>
                       
                       {/* Description preview */}
@@ -800,7 +800,7 @@ export function SeoAdsAdmin({ onClose }: SeoAdsAdminProps) {
 
                   <div className="p-4 rounded-xl bg-[#0a0a0d] border border-zinc-900 text-zinc-550 text-xs leading-normal">
                     <p className="font-light">
-                      <strong className="text-zinc-400 font-medium">Informasi Integrasi:</strong> Terminal Audit di atas merekam trigger secara dinamis. Anda dapat beralih ke halaman utama Nusantara Charcoal di latar belakang, mengisi formulir Kontak, menekan "Hubungi Kami (Kirim)", dan kembali ke tab ini untuk meneliti hasil pemicu log Google Ads Leads yang baru saja terjadi.
+                      <strong className="text-zinc-400 font-medium">Informasi Integrasi:</strong> Terminal Audit di atas merekam trigger secara dinamis. Anda dapat beralih ke halaman utama Bricket Charcoal Indonesia di latar belakang, mengisi formulir Kontak, menekan "Hubungi Kami (Kirim)", dan kembali ke tab ini untuk meneliti hasil pemicu log Google Ads Leads yang baru saja terjadi.
                     </p>
                   </div>
                 </motion.div>
