@@ -523,6 +523,8 @@ Tanyakan produk, spesifikasi, atau volume ekspor — atau ketik *"Saya mau sampl
 // Vite middleware setup
 async function setupServer() {
   if (process.env.NODE_ENV !== "production") {
+    // Clean URL for the CRM admin SPA in dev: /admin/crm → vite-transformed admin-crm.html.
+    app.get("/admin/crm", (req, _res, next) => { req.url = "/admin-crm.html"; next(); });
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -537,6 +539,10 @@ async function setupServer() {
       next();
     });
     app.use(express.static(distPath));
+    // CRM admin SPA (auth-gated, separate bundle) at a clean /admin/crm URL.
+    app.get("/admin/crm", (_req, res) => {
+      res.sendFile(path.join(distPath, "admin-crm.html"));
+    });
     // Per-language prerendered pages. express.static already serves the localized
     // dist/<lang>/index.html for an exact "/<lang>/" request; this handles the
     // no-trailing-slash and any deeper "/<lang>/..." path, falling back to the

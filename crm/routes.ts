@@ -11,6 +11,9 @@ import { intakeLead } from "./leads";
 import { intakeChatLead } from "./chatlead";
 import { verifyChain } from "./chain";
 import { all } from "./db";
+import {
+  listInbox, listCompanies, getCompanyDetail, setStage, markSpam, createShipment, suggestDuplicates, listLedger,
+} from "./business";
 
 // Brute-force throttle on the auth endpoints (IP-based, 20 / 15 min). Hand-rolled
 // in-memory limiter to match the marketing server's house style (no new dep).
@@ -176,7 +179,31 @@ export function crmRouter(): Router {
     }
   });
 
-  // ── Protected smoke-test route (placeholder until §8.4 business APIs) ───────
+  // ── Business APIs (§8.4) — all require a valid session ─────────────────────
+  const wrap = (fn: (req: any) => Promise<any>) => async (req: any, res: any) => {
+    try {
+      res.json(await fn(req));
+    } catch (e: any) {
+      const msg = e?.message || "error";
+      console.error("CRM api error:", msg);
+      res.status(/wajib|valid|ditemukan|duplikat|> 0|YYYY/.test(msg) ? 400 : 500).json({ error: msg });
+    }
+  };
+
+  r.get("/inbox", requireAuth, wrap(() => listInbox()));
+  r.get("/ledger", requireAuth, wrap(() => listLedger()));
+  r.get("/companies", requireAuth, wrap((req) => listCompanies({ status: req.query.status, q: req.query.q })));
+  r.get("/companies/:id", requireAuth, wrap(async (req) => {
+    const d = await getCompanyDetail(req.params.id);
+    if (!d) throw new Error("company tidak ditemukan");
+    return d;
+  }));
+  r.get("/companies/:id/duplicates", requireAuth, wrap((req) => suggestDuplicates(String(req.query.name || ""), req.params.id)));
+  r.post("/companies/:id/stage", requireAuth, wrap((req) => setStage(req.params.id, String(req.body?.stage || ""), req.body?.notes)));
+  r.post("/companies/:id/spam", requireAuth, wrap((req) => markSpam(req.params.id)));
+  r.post("/shipments", requireAuth, wrap((req) => createShipment(req.body || {})));
+
+  // ── Protected smoke-test route ─────────────────────────────────────────────
   r.get("/ping", requireAuth, (_req, res) => {
     res.json({ ok: true });
   });

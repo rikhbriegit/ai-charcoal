@@ -5,6 +5,11 @@
 // on `interactions`, enforced by the DB engine).
 import pg from "pg";
 
+// Return SQL DATE (oid 1082) as the raw 'YYYY-MM-DD' string, NOT a JS Date —
+// node-pg would otherwise apply a timezone shift (e.g. B/L 2026-08-01 → prev day
+// in UTC). bl_date is a contractual field (commission accrual date), keep it exact.
+pg.types.setTypeParser(1082, (v) => v);
+
 let _pool: pg.Pool | null = null;
 export function pool(): pg.Pool {
   if (!_pool) {
