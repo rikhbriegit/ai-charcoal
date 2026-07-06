@@ -202,3 +202,55 @@ Tiap path dicek dari HTML mentah (yang dibaca Google):
 - **QA native speaker** fa & tr (copy machine-generated) — disarankan 1 penutur asli baca halaman utama sebelum kampanye.
 - **Iran/pembayaran:** perbankan Iran terputus dari SWIFT → transaksi biasanya via perantara UEA. Disarankan siapkan jawaban standar di persona AI untuk skenario ini (belum dibuat).
 - Domain di canonical/hreflang/sitemap masih `bricketcharcoal.com` — **konfirmasi domain final saat deploy**. `SITE_ORIGIN` di `LanguageContext.tsx` juga.
+
+---
+
+## 13. CRM Lead Ledger 🧾 (fitur baru — MVP komplet)
+
+> Sesi: **6 Juli 2026**. Add-on terpisah di folder `crm/` + `src/crm-admin/`, menempel di server yang sama. **Bukan CRM umum** — ini **ledger atribusi + komisi** di mana tiap baris dirancang jadi **bukti kontraktual** (match Kesepakatan Awal / Perjanjian: Pasal 1 definisi, 3 atribusi, 4 komisi @Rp2.250.000/kontainer, 5 rekonsiliasi). Spec acuan: **SPEC v2.1** (diiterasi bareng: v1→v2→v2.1). Commit: `216dbbf` (§8.0–8.3), `ab60f4d` (§8.4), `ef707e7` (§8.5).
+
+### 13.1 Keputusan stack (v2.1)
+- **Postgres** (bukan SQLite) — **reuse stack project `d:\app-scode\ai-chat-embedded` (orbit)**. Database khusus `crm`, terisolasi. Uang = `BIGINT` rupiah.
+- **Auth di-PORT dari orbit** (`lib/auth.ts`): **Google OAuth** (GIS id-token diverifikasi server-side) + **fallback password bcrypt cost 12** (anti single-point-of-failure di akun Google) + **JWT httpOnly cookie 24 jam** + revocation via `token_version` + **allowlist email ketat** (cuma `rikh.brie@gmail.com`) + lockout 5 gagal/15 mnt.
+- **Append-only `interactions` ditegakkan 3 lapis:** (1) role `crm_app` di-grant **INSERT+SELECT saja** (engine menolak UPDATE/DELETE), (2) trigger `BEFORE UPDATE/DELETE RAISE`, (3) tak ada endpoint API. Plus **hash-chain** (`prev_hash`/`row_hash` sha256, di-serialize advisory-lock).
+- **Dua role DB:** `crm_migrator` (owner/DDL, kredensial TIDAK di runtime app) & `crm_app` (runtime DML). Superuser `postgres` cuma untuk bootstrap sekali.
+- `pg_trgm` (saran duplikat nama Arab/Persia — manusia yang merge, tak pernah auto) + `citext` (email PK).
+
+### 13.2 Skema (8 tabel inti + 2 pendukung)
+`companies` (dedup: `name_normalized`→`email_domain`→`phones`; `first_touch_*` immutable via trigger; `is_exclusion_list` terkunci setelah `exclusion_locked_at`) · `contacts` · **`interactions`** (append-only + hash-chain) · `pipeline` · `shipments` (Kontainer Terkirim, `bl_number` unik, `order_seq`≥2 = Repeat Order) · `commission_ledger` (snapshot rate saat dibuat) · `reconciliations` · `settings` · `accounts` (auth) · `unparsed_leads` (antrian chat gagal-parse). Migrasi: `crm/db/000_bootstrap.sql` (superuser, password via psql `:var`) + `001_schema` + `002_auth` + `003_unparsed` (as `crm_migrator`).
+
+### 13.3 Fase build (§8.0–8.5, semua teruji)
+| Fase | Isi |
+|---|---|
+| §8.0 | Auth (port orbit): OAuth Google + bcrypt fallback + JWT cookie + allowlist + lockout + revocation; `requireAuth`. |
+| §8.1 | Skema Postgres + append-only 3-lapis + hash-chain + immutable first-touch + exclusion-lock. |
+| §8.2 | `POST /crm/api/leads` publik (honeypot + rate-limit), dedup, **UTM first-touch** (cookie 90 hr, `main.tsx`), `Contact.tsx` kirim lead beneran. |
+| §8.3 | **AI chat → ekstraksi lead** (pass JSON terpisah, model dipanggil saat percakapan berakhir via `keepalive`), valid → `intakeLead(ai_chat)`, gagal/lemah → antrian `unparsed`. Persona utama tak diubah. |
+| §8.4 | API bisnis + **Admin UI** (entry Vite terpisah `admin-crm.html` @ `/admin/crm`, bukan bagian bundle marketing): Login, Inbox (qualify/spam), Company detail (timeline read-only + kontak + shipments + komisi), Shipments & Komisi (input B/L 30 detik → komisi accrued, promosi Lead→Customer Digital di B/L pertama). |
+| §8.5 | **Dashboard** (kontainer, komisi accrued/invoiced/paid, lead per kanal, pipeline, tren 6 bulan) + **Report bulanan** (§6: `GET /report/:month` + CSV, first-touch sbg bukti atribusi + B/L + total + **hash-chain terverifikasi**) + **Rekonsiliasi** (§5: upload CSV Pihak Pertama → match `bl_number` → `unmatched_ours` = potensi komisi tak dibayar + `unmatched_theirs`). |
+
+### 13.4 Verifikasi end-to-end (curl + DB + Playwright)
+- **Integritas ledger:** UPDATE/DELETE `interactions` sbg `crm_app` → **ditolak engine**; sbg `crm_migrator` → ditolak trigger; ubah `first_touch` → ditolak immutable. ✅
+- **Dedup:** 2 lead "Al Noor FZE"/"LLC" → 1 company, 2 interaction, first-touch tetap. ✅
+- **Chat:** transcript pembeli → company `ai_chat` (Gulf Shisha, SA) + field terekstrak + transcript di payload; obrolan biasa → tak bikin lead. ✅
+- **Komisi:** B/L pertama → `customer_digital` + accrued Rp4.5jt; B/L kedua → Repeat Order Rp2.25jt; duplikat B/L → 400. ✅
+- **Admin UI (Playwright):** login → Dashboard **Rp6.750.000** → Report chain-verified → Rekonsiliasi flag "Ghost Co". ✅
+- **UTF-8:** normalisasi nama Turki (`kömür`) & Arab benar (byte artefak curl ≠ bug). ✅
+- **Auth:** password salah 401, email non-allowlist 403, login benar 200+cookie, logout → cookie lama 401 (revocation). ✅
+
+### 13.5 Cara jalan (lokal, dev)
+```
+npm run dev  →  http://localhost:3001/admin/crm
+login: rikh.brie@gmail.com / Crm@Dev2026
+```
+Postgres 18 lokal, db `crm`. Kredensial dev di `.env` (gitignored) — **tak ada yang masuk git** (password role bootstrap pakai psql `:var`).
+
+### 13.6 Sengaja ditunda (belum dikerjakan)
+- **Merge companies UI** — perlu pola `merged_into` (interaction append-only tak bisa di-repoint via UPDATE); pg_trgm sudah menyarankan kandidat.
+- **PDF server-side asli** — sekarang layar report **printable→PDF** + unduh **CSV** (cukup untuk kirim ke Pihak Pertama tiap ≤tgl 5).
+- **Tes login Google di browser** — kode siap; tinggal tambah `http://localhost:3001` di *Authorized JavaScript origins* Google Cloud Console (Client ID orbit sudah ada, email sudah di allowlist).
+- **Seeding Lampiran A + `exclusion_locked_at` + `attribution_start_date`** — butuh data kontrak asli.
+- **WA Business API, multi-user, notif Telegram** — fase 2. **Deploy produksi** (VPS + backup cron `pg_dump`) — fase deploy.
+
+### 13.7 Bobot bukti (kejujuran)
+Hash-chain + grant INSERT-only mendeteksi/mencegah tamper kasual, tapi pemilik penuh server tetap bisa membangun ulang DB. **Bobot bukti sesungguhnya = laporan bulanan §6 dikirim ke Pihak Pertama** (Pasal 5.3: keberatan maks 14 hari → dianggap disetujui) → jadi **catatan yang disepakati dua pihak**. Ide read-replica untuk Pihak Pertama **ditolak** (menambah permukaan risiko tanpa menambah bobot bukti).
