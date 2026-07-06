@@ -4,11 +4,17 @@ import { Login } from "./Login";
 import { Inbox } from "./Inbox";
 import { CompanyDetail } from "./CompanyDetail";
 import { Shipments } from "./Shipments";
+import { Dashboard } from "./Dashboard";
+import { Report } from "./Report";
+import { Reconciliation } from "./Reconciliation";
 
 type View =
+  | { name: "dashboard" }
   | { name: "inbox" }
   | { name: "company"; id: string }
-  | { name: "shipments"; companyId?: string };
+  | { name: "shipments"; companyId?: string }
+  | { name: "report" }
+  | { name: "reconcile" };
 
 const tab = (active: boolean) =>
   `px-3 py-1.5 rounded text-sm ${active ? "bg-orange-600 text-white" : "text-zinc-400 hover:text-white hover:bg-zinc-800"}`;
@@ -16,7 +22,7 @@ const tab = (active: boolean) =>
 export function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
-  const [view, setView] = useState<View>({ name: "inbox" });
+  const [view, setView] = useState<View>({ name: "dashboard" });
 
   useEffect(() => {
     api.me().then((r) => { setAuthed(true); setEmail(r.email); }).catch(() => setAuthed(false));
@@ -31,8 +37,11 @@ export function App() {
         <div className="flex items-center gap-5">
           <span className="font-bold text-orange-500">CRM · Bricket Charcoal</span>
           <nav className="flex gap-1">
+            <button onClick={() => setView({ name: "dashboard" })} className={tab(view.name === "dashboard")}>Dashboard</button>
             <button onClick={() => setView({ name: "inbox" })} className={tab(view.name === "inbox" || view.name === "company")}>Inbox</button>
             <button onClick={() => setView({ name: "shipments" })} className={tab(view.name === "shipments")}>Shipments &amp; Komisi</button>
+            <button onClick={() => setView({ name: "report" })} className={tab(view.name === "report")}>Report</button>
+            <button onClick={() => setView({ name: "reconcile" })} className={tab(view.name === "reconcile")}>Rekonsiliasi</button>
           </nav>
         </div>
         <div className="flex items-center gap-3 text-xs text-zinc-400">
@@ -42,6 +51,9 @@ export function App() {
       </header>
 
       <main className="p-6 max-w-6xl mx-auto">
+        {view.name === "dashboard" && <Dashboard />}
+        {view.name === "report" && <Report />}
+        {view.name === "reconcile" && <Reconciliation />}
         {view.name === "inbox" && <Inbox onOpen={(id) => setView({ name: "company", id })} />}
         {view.name === "company" && (
           <CompanyDetail

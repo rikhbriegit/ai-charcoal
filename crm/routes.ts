@@ -14,6 +14,7 @@ import { all } from "./db";
 import {
   listInbox, listCompanies, getCompanyDetail, setStage, markSpam, createShipment, suggestDuplicates, listLedger,
 } from "./business";
+import { getDashboard, getMonthlyReport, getMonthlyReportCsv, reconcile, listReconciliations } from "./report";
 
 // Brute-force throttle on the auth endpoints (IP-based, 20 / 15 min). Hand-rolled
 // in-memory limiter to match the marketing server's house style (no new dep).
@@ -202,6 +203,22 @@ export function crmRouter(): Router {
   r.post("/companies/:id/stage", requireAuth, wrap((req) => setStage(req.params.id, String(req.body?.stage || ""), req.body?.notes)));
   r.post("/companies/:id/spam", requireAuth, wrap((req) => markSpam(req.params.id)));
   r.post("/shipments", requireAuth, wrap((req) => createShipment(req.body || {})));
+
+  // ── §8.5 dashboard / report / reconciliation ───────────────────────────────
+  r.get("/dashboard", requireAuth, wrap(() => getDashboard()));
+  r.get("/report/:month", requireAuth, wrap((req) => getMonthlyReport(req.params.month)));
+  r.get("/report/:month/csv", requireAuth, async (req: any, res) => {
+    try {
+      const csv = await getMonthlyReportCsv(req.params.month);
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="crm-report-${req.params.month}.csv"`);
+      res.send(csv);
+    } catch (e: any) {
+      res.status(400).json({ error: e?.message || "error" });
+    }
+  });
+  r.post("/reconcile", requireAuth, wrap((req) => reconcile(String(req.body?.month || ""), Array.isArray(req.body?.rows) ? req.body.rows : [])));
+  r.get("/reconciliations", requireAuth, wrap(() => listReconciliations()));
 
   // ── Protected smoke-test route ─────────────────────────────────────────────
   r.get("/ping", requireAuth, (_req, res) => {

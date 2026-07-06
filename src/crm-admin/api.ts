@@ -23,6 +23,10 @@ export const api = {
   spam: (id: string) => req(`/companies/${id}/spam`, { method: "POST" }),
   createShipment: (data: any) => req("/shipments", { method: "POST", body: JSON.stringify(data) }),
   chainVerify: () => req("/chain/verify"),
+  dashboard: () => req("/dashboard"),
+  report: (month: string) => req("/report/" + month),
+  reportCsvUrl: (month: string) => `/crm/api/report/${month}/csv`,
+  reconcile: (month: string, rows: any[]) => req("/reconcile", { method: "POST", body: JSON.stringify({ month, rows }) }),
 };
 
 export const rp = (n: number) => "Rp" + (Number(n) || 0).toLocaleString("id-ID");
